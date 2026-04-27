@@ -1,0 +1,218 @@
+<div class="card shadow-sm w-100">
+  <app-page-title titulo="Convidados" />
+  <div class="card-body p-0">
+    @if (loading()) {
+      <div class="text-center p-4">
+        <span class="spinner-border" role="status"></span>
+        <p class="mt-2 text-muted">Carregando...</p>
+      </div>
+    } @else if (erro()) {
+      <div class="alert alert-danger m-3" role="alert">{{ erro() }}</div>
+    } @else {
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <thead>
+            <tr>
+              @for (col of colunas; track col.key) {
+                <th>{{ col.label }}</th>
+              }
+              <th class="text-center col-acao">
+                Ação
+                <app-crud-buttons [mostrarInserir]="true" [mostrarVisualizar]="false" [mostrarAlterar]="false" [mostrarExcluir]="false" (inserir)="onInserir()" />
+              </th>
+            </tr>
+            <tr>
+              @for (col of colunas; track col.key) {
+                <th>
+                  @if (col.key !== 'foto' && col.key !== 'pessoa.foto') {
+                    <input type="text" class="form-control form-control-sm filtro-input"
+                      placeholder="Filtrar..."
+                      [value]="filtros()[col.key] ?? ''"
+                      (input)="onFiltroChange(col.key, $any($event.target).value)" />
+                  }
+                </th>
+              }
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of dadosPaginados(); track item.id) {
+              <tr>
+                @for (col of colunas; track col.key) {
+                  <td>
+                    @if (col.key === 'foto' || col.key === 'pessoa.foto') {
+                      @if (getValor(item, col.key)) {
+                        <img [src]="hexToDataUrl('' + getValor(item, col.key))" alt="Foto" class="foto-tabela cursor-pointer" (click)="abrirFotoAmpliada('' + getValor(item, col.key))" />
+                      } @else {
+                        <span>👤</span>
+                      }
+                    } @else {
+                      {{ getValor(item, col.key) }}
+                    }
+                  </td>
+                }
+                <td class="text-center">
+                  <app-crud-buttons [mostrarVisualizar]="false" [mostrarAlterar]="false" (excluir)="onExcluir(item)" />
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td [attr.colspan]="colunas.length + 1" class="text-center text-muted p-3">
+                  Nenhum registro encontrado.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-content-end align-items-center p-3 border-top gap-3">
+        <span class="text-muted">{{ dadosFiltrados().length }} registro(s) encontrado(s)</span>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="paginaAtual() === 1" (click)="irParaPagina(1)">«</button>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="paginaAtual() === 1" (click)="irParaPagina(paginaAtual() - 1)">‹ Anterior</button>
+        <span>{{ paginaAtual() }} / {{ totalPaginas() }}</span>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="paginaAtual() === totalPaginas()" (click)="irParaPagina(paginaAtual() + 1)">Próxima ›</button>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="paginaAtual() === totalPaginas()" (click)="irParaPagina(totalPaginas())">»</button>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Modal Inserir -->
+@if (modalInserirAberto()) {
+  <div class="modal-backdrop show"></div>
+  <div class="modal d-block" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content shadow-lg border-0">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">Novo Convidado</h5>
+          <button type="button" class="btn-close btn-close-white" (click)="fecharModalInserir()"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="row">
+              <div class="col-12 mb-3 text-center">
+                <label class="form-label d-block">Foto</label>
+                @if (fotoPreview()) {
+                  <img [src]="fotoPreview()" alt="Preview" class="foto-preview mb-2" />
+                }
+                @if (cameraAtiva()) {
+                  <div class="mb-2">
+                    <video #videoEl autoplay playsinline class="camera-video"></video>
+                  </div>
+                  <button type="button" class="btn btn-sm btn-success me-2" (click)="capturarFoto()">📸 Capturar</button>
+                  <button type="button" class="btn btn-sm btn-secondary" (click)="pararCamera()">Cancelar</button>
+                  <canvas #canvasEl class="d-none"></canvas>
+                } @else {
+                  <div class="d-flex justify-content-center gap-2">
+                    <input type="file" accept="image/*" class="d-none" #fotoInput (change)="onArquivoFoto($event)" />
+                    <button type="button" class="btn btn-sm btn-outline-primary" (click)="fotoInput.click()">📁 Arquivo</button>
+                    <button type="button" class="btn btn-sm btn-outline-success" (click)="iniciarCamera()">📷 Câmera</button>
+                  </div>
+                }
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Visitante</label>
+                <input type="text" class="form-control" placeholder="Nome do visitante"
+                  [value]="formInserir()['visitante']"
+                  (input)="updateFormInserir('visitante', $any($event.target).value)" />
+              </div>
+              <div class="col-md-6 mb-3 position-relative">
+                <label class="form-label">Pessoa</label>
+                <input type="text" class="form-control" placeholder="Digite o nome da pessoa"
+                  [value]="pessoaFiltro()"
+                  (input)="onPessoaInput($any($event.target).value)"
+                  (focus)="pessoaDropdownAberto.set(true)" />
+                @if (pessoaDropdownAberto() && pessoasFiltradas().length > 0) {
+                  <ul class="dropdown-autocomplete">
+                    @for (p of pessoasFiltradas(); track p.id) {
+                      <li (click)="selecionarPessoa(p)">{{ p.nomeCompleto }}</li>
+                    }
+                  </ul>
+                }
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Data Entrada</label>
+                <input type="datetime-local" class="form-control"
+                  [value]="formInserir()['dataEntrada']"
+                  (input)="updateFormInserir('dataEntrada', $any($event.target).value)" />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Data Saída</label>
+                <input type="datetime-local" class="form-control"
+                  [value]="formInserir()['dataSaida']"
+                  (input)="updateFormInserir('dataSaida', $any($event.target).value)" />
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer border-0">
+          <button class="btn btn-outline-secondary" (click)="fecharModalInserir()">Cancelar</button>
+          <button class="btn btn-primary" (click)="confirmarInserir()" [disabled]="salvando()">
+            @if (salvando()) {
+              <span class="spinner-border spinner-border-sm me-1"></span>
+            }
+            Salvar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal Excluir -->
+@if (modalAberto()) {
+  <div class="modal-backdrop show"></div>
+  <div class="modal d-block" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content shadow-lg border-0">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title">Excluir Convidado</h5>
+          <button type="button" class="btn-close btn-close-white" (click)="fecharModal()"></button>
+        </div>
+        <div class="modal-body">
+          <p class="text-danger fw-bold">Tem certeza que deseja excluir o convidado <strong>{{ itemSelecionado()?.visitante }}</strong>?</p>
+          <div class="mb-2">
+            <label class="form-label">ID</label>
+            <input type="text" class="form-control" [value]="itemSelecionado()?.id" readOnly />
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Visitante</label>
+            <input type="text" class="form-control" [value]="itemSelecionado()?.visitante" readOnly />
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Pessoa</label>
+            <input type="text" class="form-control" [value]="itemSelecionado()?.pessoa?.nomeCompleto" readOnly />
+          </div>
+        </div>
+        <div class="modal-footer border-0">
+          <button class="btn btn-outline-secondary" (click)="fecharModal()">Cancelar</button>
+          <button class="btn btn-danger" (click)="confirmarExcluir()" [disabled]="excluindo()">
+            @if (excluindo()) {
+              <span class="spinner-border spinner-border-sm me-1"></span>
+            }
+            Excluir
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal Foto Ampliada -->
+@if (modalFotoAberto()) {
+  <div class="modal-backdrop show"></div>
+  <div class="modal d-block" tabindex="-1" role="dialog" (click)="fecharFotoAmpliada()">
+    <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
+      <div class="modal-content shadow-lg border-0">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">Foto do Convidado</h5>
+          <button type="button" class="btn-close btn-close-white" (click)="fecharFotoAmpliada()"></button>
+        </div>
+        <div class="modal-body text-center p-4">
+          <img [src]="fotoAmpliada()" alt="Foto ampliada" class="foto-ampliada" />
+        </div>
+      </div>
+    </div>
+  </div>
+}

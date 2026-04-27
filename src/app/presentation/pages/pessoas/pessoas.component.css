@@ -1,0 +1,130 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.table {
+  border-collapse: collapse;
+  font-family: Calibri, "Segoe UI", Arial, sans-serif;
+  font-size: 0.875rem;
+  width: 100%;
+}
+
+.table th,
+.table td {
+  border: 1px solid #d4d4d4;
+  padding: 4px 8px;
+  vertical-align: middle;
+}
+
+.table thead tr:first-child th {
+  background-color: #4472c4;
+  color: #fff;
+  font-weight: 600;
+  text-align: left;
+  border-color: #3a63a8;
+  white-space: nowrap;
+}
+
+.table thead tr:nth-child(2) th {
+  background-color: #d9e2f3;
+  padding: 2px 4px;
+  border-color: #b4c6e7;
+}
+
+.table tbody tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #d9e2f3;
+}
+
+.table tbody tr:hover {
+  background-color: #b4c6e7;
+}
+
+.table tbody tr.selected {
+  background-color: #4472c4;
+  color: #fff;
+}
+
+.filtro-input {
+  font-size: 0.8rem;
+  border: 1px solid #b4c6e7;
+  border-radius: 0;
+  padding: 2px 6px;
+  background-color: #fff;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.filtro-input:focus {
+  border-color: #4472c4;
+  box-shadow: none;
+  outline: none;
+}
+
+.card-header {
+  background-color: #fd7e14 !important;
+  color: #fff !important;
+  border-bottom: 2px solid #e06b0a;
+  text-align: center;
+}
+
+.card-header .btn-outline-primary {
+  color: #fff;
+  border-color: #fff;
+}
+
+.card-header .btn-outline-primary:hover {
+  background-color: #fff;
+  color: #4472c4;
+}
+
+.col-acao {
+  width: 200px;
+  min-width: 200px;
+}
+
+.foto-tabela {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #b4c6e7;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 9998;
+}
+
+.modal.d-block {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  background: transparent;
+}
+
+.foto-modal {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #4472c4;
+  display: block;
+  margin: 0 auto;
+}

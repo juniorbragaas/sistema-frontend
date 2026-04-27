@@ -1,0 +1,228 @@
+<div class="card shadow-sm w-100">
+  <app-page-title titulo="Início do Sistema" />
+  <div class="card-body p-4">
+    <form (ngSubmit)="salvar()">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Nome do Sistema</label>
+          <input type="text" class="form-control"
+            [value]="nome()"
+            (input)="nome.set($any($event.target).value)" />
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Ícone do Sistema</label>
+          <div class="d-flex align-items-center gap-3">
+            <img [src]="iconPreview()" alt="Ícone" class="icon-preview" />
+            <div>
+              <input type="file" accept=".ico,.png,.jpg,.svg" class="d-none" #iconInput (change)="onIconChange($event)" />
+              <button type="button" class="btn btn-sm btn-outline-primary" (click)="iconInput.click()">📁 Carregar Ícone</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Cor da Barra Principal</label>
+          <div class="d-flex align-items-center gap-2">
+            <input type="color" class="form-control form-control-color"
+              [value]="barColor()"
+              (input)="barColor.set($any($event.target).value)" />
+            <input type="text" class="form-control" style="max-width: 120px;"
+              [value]="barColor()"
+              (input)="barColor.set($any($event.target).value)" />
+          </div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Cor da Letra da Barra</label>
+          <div class="d-flex align-items-center gap-2">
+            <input type="color" class="form-control form-control-color"
+              [value]="barTextColor()"
+              (input)="barTextColor.set($any($event.target).value)" />
+            <input type="text" class="form-control" style="max-width: 120px;"
+              [value]="barTextColor()"
+              (input)="barTextColor.set($any($event.target).value)" />
+          </div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Cor de Fundo dos Títulos de Página</label>
+          <div class="d-flex align-items-center gap-2">
+            <input type="color" class="form-control form-control-color"
+              [value]="pageTitleBgColor()"
+              (input)="pageTitleBgColor.set($any($event.target).value)" />
+            <input type="text" class="form-control" style="max-width: 120px;"
+              [value]="pageTitleBgColor()"
+              (input)="pageTitleBgColor.set($any($event.target).value)" />
+          </div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Cor do Texto dos Títulos de Página</label>
+          <div class="d-flex align-items-center gap-2">
+            <input type="color" class="form-control form-control-color"
+              [value]="pageTitleTextColor()"
+              (input)="pageTitleTextColor.set($any($event.target).value)" />
+            <input type="text" class="form-control" style="max-width: 120px;"
+              [value]="pageTitleTextColor()"
+              (input)="pageTitleTextColor.set($any($event.target).value)" />
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-2 mb-3">
+        <label class="form-label">Pré-visualização</label>
+        <div class="preview-bar" [style.background-color]="barColor()" [style.color]="barTextColor()">
+          <img [src]="iconPreview()" alt="Ícone" class="preview-icon" />
+          <span>{{ nome() }}</span>
+        </div>
+      </div>
+
+      <hr class="my-4" />
+      <h5 class="mb-3">Cores dos Botões CRUD</h5>
+      <div class="row">
+        <div class="col-md-3 mb-3">
+          <label class="form-label">Inserir Novo - Fundo</label>
+          <div class="d-flex gap-2">
+            <input type="color" class="form-control form-control-color" [value]="btnInserirBg()" (input)="btnInserirBg.set($any($event.target).value)" />
+            <input type="text" class="form-control" style="max-width:100px" [value]="btnInserirBg()" (input)="btnInserirBg.set($any($event.target).value)" />
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <label class="form-label">Inserir Novo - Texto</label>
+          <div class="d-flex gap-2">
+            <input type="color" class="form-control form-control-color" [value]="btnInserirText()" (input)="btnInserirText.set($any($event.target).value)" />
+            <input type="text" class="form-control" style="max-width:100px" [value]="btnInserirText()" (input)="btnInserirText.set($any($event.target).value)" />
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <label class="form-label">Visualizar - Fundo</label>
+          <div class="d-flex gap-2">
+            <input type="color" class="form-control form-control-color" [value]="btnVisualizarBg()" (input)="btnVisualizarBg.set($any($event.target).value)" />
+            <input type="text" class="form-control" style="max-width:100px" [value]="btnVisualizarBg()" (input)="btnVisualizarBg.set($any($event.target).value)" />
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <label class="form-label">Visualizar - Texto</label>
+          <div class="d-flex gap-2">
+            <input type="color" class="form-control form-control-color" [value]="btnVisualizarText()" (input)="btnVisualizarText.set($any($event.target).value)" />
+            <input type="text" class="form-control" style="max-width:100px" [value]="btnVisualizarText()" (input)="btnVisualizarText.set($any($event.target).value)" />
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <label class="form-label">Alterar - Fundo</label>
+          <div class="d-flex gap-2">
+            <input type="color" class="form-control form-control-color" [value]="btnAlterarBg()" (input)="btnAlterarBg.set($any($event.target).value)" />
+            <input type="text" class="form-control" style="max-width:100px" [value]="btnAlterarBg()" (input)="btnAlterarBg.set($any($event.target).value)" />
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <label class="form-label">Alterar - Texto</label>
+          <div class="d-flex gap-2">
+            <input type="color" class="form-control form-control-color" [value]="btnAlterarText()" (input)="btnAlterarText.set($any($event.target).value)" />
+            <input type="text" class="form-control" style="max-width:100px" [value]="btnAlterarText()" (input)="btnAlterarText.set($any($event.target).value)" />
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <label class="form-label">Excluir - Fundo</label>
+          <div class="d-flex gap-2">
+            <input type="color" class="form-control form-control-color" [value]="btnExcluirBg()" (input)="btnExcluirBg.set($any($event.target).value)" />
+            <input type="text" class="form-control" style="max-width:100px" [value]="btnExcluirBg()" (input)="btnExcluirBg.set($any($event.target).value)" />
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <label class="form-label">Excluir - Texto</label>
+          <div class="d-flex gap-2">
+            <input type="color" class="form-control form-control-color" [value]="btnExcluirText()" (input)="btnExcluirText.set($any($event.target).value)" />
+            <input type="text" class="form-control" style="max-width:100px" [value]="btnExcluirText()" (input)="btnExcluirText.set($any($event.target).value)" />
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Pré-visualização dos Botões</label>
+        <div class="d-flex gap-2 align-items-center">
+          <button type="button" class="btn btn-sm" [style.background-color]="btnInserirBg()" [style.color]="btnInserirText()">➕ Novo</button>
+          <button type="button" class="btn btn-sm" [style.background-color]="btnVisualizarBg()" [style.color]="btnVisualizarText()">👁️ Visualizar</button>
+          <button type="button" class="btn btn-sm" [style.background-color]="btnAlterarBg()" [style.color]="btnAlterarText()">✏️ Alterar</button>
+          <button type="button" class="btn btn-sm" [style.background-color]="btnExcluirBg()" [style.color]="btnExcluirText()">🗑️ Excluir</button>
+        </div>
+      </div>
+
+      <hr class="my-4" />
+      <h5 class="mb-3">Cores dos Botões de Ação</h5>
+      <div class="row">
+        <div class="col-md-3 mb-3">
+          <label class="form-label">Salvar - Fundo</label>
+          <div class="d-flex gap-2">
+            <input type="color" class="form-control form-control-color" [value]="btnSalvarBg()" (input)="btnSalvarBg.set($any($event.target).value)" />
+            <input type="text" class="form-control" style="max-width:100px" [value]="btnSalvarBg()" (input)="btnSalvarBg.set($any($event.target).value)" />
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <label class="form-label">Salvar - Texto</label>
+          <div class="d-flex gap-2">
+            <input type="color" class="form-control form-control-color" [value]="btnSalvarText()" (input)="btnSalvarText.set($any($event.target).value)" />
+            <input type="text" class="form-control" style="max-width:100px" [value]="btnSalvarText()" (input)="btnSalvarText.set($any($event.target).value)" />
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <label class="form-label">Cancelar - Fundo</label>
+          <div class="d-flex gap-2">
+            <input type="color" class="form-control form-control-color" [value]="btnCancelarBg()" (input)="btnCancelarBg.set($any($event.target).value)" />
+            <input type="text" class="form-control" style="max-width:100px" [value]="btnCancelarBg()" (input)="btnCancelarBg.set($any($event.target).value)" />
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <label class="form-label">Cancelar - Texto</label>
+          <div class="d-flex gap-2">
+            <input type="color" class="form-control form-control-color" [value]="btnCancelarText()" (input)="btnCancelarText.set($any($event.target).value)" />
+            <input type="text" class="form-control" style="max-width:100px" [value]="btnCancelarText()" (input)="btnCancelarText.set($any($event.target).value)" />
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <label class="form-label">Sim - Fundo</label>
+          <div class="d-flex gap-2">
+            <input type="color" class="form-control form-control-color" [value]="btnSimBg()" (input)="btnSimBg.set($any($event.target).value)" />
+            <input type="text" class="form-control" style="max-width:100px" [value]="btnSimBg()" (input)="btnSimBg.set($any($event.target).value)" />
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <label class="form-label">Sim - Texto</label>
+          <div class="d-flex gap-2">
+            <input type="color" class="form-control form-control-color" [value]="btnSimText()" (input)="btnSimText.set($any($event.target).value)" />
+            <input type="text" class="form-control" style="max-width:100px" [value]="btnSimText()" (input)="btnSimText.set($any($event.target).value)" />
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <label class="form-label">Não - Fundo</label>
+          <div class="d-flex gap-2">
+            <input type="color" class="form-control form-control-color" [value]="btnNaoBg()" (input)="btnNaoBg.set($any($event.target).value)" />
+            <input type="text" class="form-control" style="max-width:100px" [value]="btnNaoBg()" (input)="btnNaoBg.set($any($event.target).value)" />
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <label class="form-label">Não - Texto</label>
+          <div class="d-flex gap-2">
+            <input type="color" class="form-control form-control-color" [value]="btnNaoText()" (input)="btnNaoText.set($any($event.target).value)" />
+            <input type="text" class="form-control" style="max-width:100px" [value]="btnNaoText()" (input)="btnNaoText.set($any($event.target).value)" />
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Pré-visualização</label>
+        <div class="d-flex gap-2 align-items-center">
+          <button type="button" class="btn btn-sm" [style.background-color]="btnSalvarBg()" [style.color]="btnSalvarText()">💾 Salvar</button>
+          <button type="button" class="btn btn-sm" [style.background-color]="btnCancelarBg()" [style.color]="btnCancelarText()">Cancelar</button>
+          <button type="button" class="btn btn-sm" [style.background-color]="btnSimBg()" [style.color]="btnSimText()">✅ Sim</button>
+          <button type="button" class="btn btn-sm" [style.background-color]="btnNaoBg()" [style.color]="btnNaoText()">❌ Não</button>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <button type="submit" class="btn"
+          [style.background-color]="cfg.btnSalvarBg()"
+          [style.color]="cfg.btnSalvarText()">💾 Salvar Configurações</button>
+        @if (salvo()) {
+          <span class="ms-3 text-success fw-bold">✅ Salvo!</span>
+        }
+      </div>
+    </form>
+  </div>
+</div>

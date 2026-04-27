@@ -1,0 +1,43 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.card-header {
+  background-color: #fd7e14 !important;
+  color: #fff !important;
+  border-bottom: 2px solid #e06b0a;
+  text-align: center;
+}
+
+.icon-preview {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border: 1px solid #b4c6e7;
+  border-radius: 4px;
+  padding: 4px;
+  background: #fff;
+}
+
+.preview-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.preview-icon {
+  width: 28px;
+  height: 28px;
+}
+
+.form-control-color {
+  width: 48px;
+  height: 38px;
+  padding: 2px;
+  cursor: pointer;
+}

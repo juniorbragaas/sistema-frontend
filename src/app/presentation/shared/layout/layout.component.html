@@ -1,0 +1,86 @@
+<app-barra-principal (toggleSidebar)="toggleSidebar()" />
+
+<div class="layout">
+  <nav class="sidebar" [class.collapsed]="sidebarCollapsed()">
+    <div class="sidebar-header">Menu</div>
+    <hr />
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link menu-parent" href="#" (click)="toggleHomeMenu($event)">
+          🏠 Home
+          <span class="menu-arrow" [class.open]="homeMenuOpen()">▸</span>
+        </a>
+        @if (homeMenuOpen()) {
+          <ul class="nav flex-column submenu">
+            <li class="nav-item">
+              <a class="nav-link menu-parent" href="#" (click)="toggleConfigMenu($event)">
+                ⚙️ Configurações
+                <span class="menu-arrow" [class.open]="configMenuOpen()">▸</span>
+              </a>
+              @if (configMenuOpen()) {
+                <ul class="nav flex-column submenu">
+                  <li class="nav-item">
+                    <a class="nav-link" routerLink="/inicio-sistema">🏁 Início do Sistema</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">👤 Usuários</a>
+                  </li>
+                </ul>
+              }
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">📊 Dashboard</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">📋 Logs</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link menu-parent" href="#" (click)="toggleFinanceiroMenu($event)">
+                💲 Financeiro
+                <span class="menu-arrow" [class.open]="financeiroMenuOpen()">▸</span>
+              </a>
+              @if (financeiroMenuOpen()) {
+                <ul class="nav flex-column submenu">
+                  <li class="nav-item">
+                    <a class="nav-link" routerLink="/tipo-despesas">💰 Tipo de Despesas</a>
+                  </li>
+                </ul>
+              }
+            </li>
+            <li class="nav-item">
+              <a class="nav-link menu-parent" href="#" (click)="togglePessoasMenu($event)">
+                👥 Pessoas
+                <span class="menu-arrow" [class.open]="pessoasMenuOpen()">▸</span>
+              </a>
+              @if (pessoasMenuOpen()) {
+                <ul class="nav flex-column submenu">
+                  <li class="nav-item">
+                    <a class="nav-link" routerLink="/pessoas">📋 Listar Pessoas</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" routerLink="/convidados">🎫 Convidados</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" routerLink="/alterar-foto">📷 Alterar Foto</a>
+                  </li>
+                </ul>
+              }
+            </li>
+          </ul>
+        }
+      </li>
+    </ul>
+  </nav>
+
+  <div class="content-area p-4">
+    <app-breadcrumb />
+    <router-outlet />
+  </div>
+</div>
+
+<footer class="app-footer">
+  <span>{{ appName() }} © 2026 Todos os direitos reservados</span>
+  @if (tempoRestante()) {
+    <span class="footer-timer">⏱ Tempo Restante de Sessão: {{ tempoRestante() }}</span>
+  }
+</footer>

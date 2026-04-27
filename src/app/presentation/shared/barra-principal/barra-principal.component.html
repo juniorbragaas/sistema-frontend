@@ -1,0 +1,13 @@
+<div class="barra-principal" [style.background-color]="barColor()" [style.color]="barTextColor()">
+  <button class="toggle-btn" (click)="toggleSidebar.emit()" aria-label="Toggle menu">☰</button>
+  <img [src]="appIcon()" alt="Logo" class="logo cursor-pointer" routerLink="/home" />
+  <span class="sistema-nome cursor-pointer" routerLink="/home">{{ appName() }}</span>
+  <div class="spacer"></div>
+  @if (fotoUsuario()) {
+    <img [src]="fotoUsuario()" alt="Foto do usuário" class="foto-usuario" />
+  } @else {
+    <span class="foto-placeholder">👤</span>
+  }
+  <span class="saudacao">Olá, {{ nomeCompleto() }}</span>
+  <button class="btn btn-outline-light btn-sm btn-desconectar" (click)="onLogout()">Desconectar</button>
+</div>

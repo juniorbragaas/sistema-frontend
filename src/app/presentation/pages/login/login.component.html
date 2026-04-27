@@ -1,0 +1,36 @@
+<div class="login-wrapper">
+  <div class="logo-area">
+    <img [src]="appIcon()" alt="Logo" />
+  </div>
+  <div class="card shadow">
+    <div class="card-body p-4">
+      <h5 class="mb-4 py-2 rounded titulo-sistema">{{ appName() }}</h5>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div class="mb-3">
+          <label for="nome" class="form-label">Nome : </label>
+          <input id="nome" type="text" class="form-control" formControlName="nome" placeholder="Digite seu nome" />
+        </div>
+        <div class="mb-3">
+          <label for="senha" class="form-label">Senha : </label>
+          <input id="senha" type="password" class="form-control" formControlName="senha" placeholder="Digite sua senha" />
+        </div>
+        @if (errorMessage()) {
+          <div class="alert alert-danger py-2" role="alert">
+            {{ errorMessage() }}
+          </div>
+        }
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary flex-fill" [disabled]="loginForm.invalid || loading()">
+            @if (loading()) {
+              <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              Carregando...
+            } @else {
+              Entrar
+            }
+          </button>
+          <button type="button" class="btn btn-link flex-fill" style="white-space: nowrap;">Esqueceu a senha?</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

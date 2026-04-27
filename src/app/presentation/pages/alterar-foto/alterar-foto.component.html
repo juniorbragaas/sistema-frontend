@@ -1,0 +1,128 @@
+<div class="card shadow-sm w-100">
+  <app-page-title titulo="Alterar Foto" />
+  <div class="card-body p-4">
+    <div class="row mb-4">
+      <div class="col-md-8">
+        <label class="form-label">Pesquisar Pessoa por CPF</label>
+        <div class="d-flex gap-2">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Digite o CPF"
+            [value]="cpfBusca()"
+            (input)="cpfBusca.set($any($event.target).value)"
+            (keyup.enter)="onBuscar()"
+          />
+          <button class="btn btn-primary" (click)="onBuscar()" [disabled]="loading()">
+            @if (loading()) {
+              <span class="spinner-border spinner-border-sm me-1"></span>
+            }
+            Buscar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    @if (naoEncontrado()) {
+      <div class="alert alert-warning">Nenhum Registro foi encontrado na pesquisa</div>
+    }
+
+    @if (erro()) {
+      <div class="alert alert-danger">{{ erro() }}</div>
+    }
+
+    @if (pessoa()) {
+      <div class="card mt-3">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4 text-center">
+              <label class="form-label d-block">Foto Atual</label>
+              @if (novaFotoDataUrl()) {
+                <img [src]="novaFotoDataUrl()" alt="Nova Foto" class="foto-preview" />
+              } @else if (pessoa()!.foto) {
+                <img [src]="hexToDataUrl(pessoa()!.foto)" alt="Foto" class="foto-preview" />
+              } @else {
+                <div class="foto-placeholder">👤</div>
+              }
+              <div class="mt-2 d-flex flex-column align-items-center gap-2">
+                <button class="btn btn-sm btn-outline-primary" (click)="abrirModalFoto()">📷 Alterar Foto</button>
+                @if (novaFotoDataUrl()) {
+                  <button class="btn btn-sm btn-success" (click)="salvarFotoNoPessoa()" [disabled]="salvando()">
+                    @if (salvando()) {
+                      <span class="spinner-border spinner-border-sm me-1"></span>
+                    }
+                    💾 Salvar Foto
+                  </button>
+                }
+                @if (salvoComSucesso()) {
+                  <span class="text-success fw-bold">✅ Foto salva com sucesso!</span>
+                }
+              </div>
+            </div>
+            <div class="col-md-8">
+              <div class="mb-2">
+                <label class="form-label">Nome Completo</label>
+                <input type="text" class="form-control" [value]="pessoa()!.nomeCompleto" readOnly />
+              </div>
+              <div class="mb-2">
+                <label class="form-label">CPF</label>
+                <input type="text" class="form-control" [value]="pessoa()!.cpf" readOnly />
+              </div>
+              <div class="mb-2">
+                <label class="form-label">Email</label>
+                <input type="text" class="form-control" [value]="pessoa()!.email" readOnly />
+              </div>
+              <div class="mb-2">
+                <label class="form-label">Telefone</label>
+                <input type="text" class="form-control" [value]="pessoa()!.telefone" readOnly />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Modal Alterar Foto -->
+@if (modalFotoAberto()) {
+  <div class="modal-backdrop show"></div>
+  <div class="modal d-block" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content shadow-lg border-0">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">Alterar Foto</h5>
+          <button type="button" class="btn-close btn-close-white" (click)="fecharModalFoto()"></button>
+        </div>
+        <div class="modal-body text-center">
+          @if (previewFoto()) {
+            <img [src]="previewFoto()" alt="Preview" class="foto-preview mb-3" />
+          }
+
+          @if (cameraAtiva()) {
+            <div class="mb-3">
+              <video #videoElement autoplay playsinline class="camera-video"></video>
+            </div>
+            <button class="btn btn-success me-2" (click)="capturarFoto()">📸 Capturar</button>
+            <button class="btn btn-secondary" (click)="pararCamera()">Cancelar</button>
+            <canvas #canvasElement class="d-none"></canvas>
+          } @else {
+            <div class="d-flex justify-content-center gap-3">
+              <div>
+                <input type="file" accept="image/*" class="d-none" #fileInput (change)="onArquivoSelecionado($event)" />
+                <button class="btn btn-outline-primary" (click)="fileInput.click()">📁 Escolher Arquivo</button>
+              </div>
+              <button class="btn btn-outline-success" (click)="iniciarCamera()">📷 Tirar Foto</button>
+            </div>
+          }
+        </div>
+        <div class="modal-footer border-0">
+          <button class="btn btn-outline-secondary" (click)="fecharModalFoto()">Cancelar</button>
+          @if (previewFoto()) {
+            <button class="btn btn-primary" (click)="salvarFoto()">Salvar</button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}

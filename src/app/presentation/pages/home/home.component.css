@@ -1,0 +1,58 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.table th {
+  background-color: #d9e2f3;
+  font-weight: 600;
+  font-size: 0.875rem;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.table td {
+  vertical-align: middle;
+  font-size: 0.875rem;
+}
+
+.foto-tabela {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #b4c6e7;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.cursor-pointer:hover {
+  background-color: #b4c6e7 !important;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 9998;
+}
+
+.modal.d-block {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  background: transparent;
+}

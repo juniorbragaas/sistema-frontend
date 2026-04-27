@@ -1,0 +1,171 @@
+<div class="row">
+  <!-- Pessoas -->
+  <div class="col-md-6 mb-4">
+    <div class="card shadow-sm">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Pessoas</h5>
+      </div>
+      <div class="card-body p-0">
+        @if (loadingPessoas()) {
+          <div class="text-center p-4">
+            <span class="spinner-border spinner-border-sm"></span> Carregando...
+          </div>
+        } @else {
+          <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+            <table class="table table-sm mb-0">
+              <thead>
+                <tr><th>Foto</th><th>Nome</th></tr>
+                <tr>
+                  <th></th>
+                  <th>
+                    <input type="text" class="form-control form-control-sm filtro-input"
+                      placeholder="Filtrar nome..."
+                      [value]="filtroPessoaNome()"
+                      (input)="filtroPessoaNome.set($any($event.target).value)" />
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (p of pessoasFiltradas(); track p.id) {
+                  <tr class="cursor-pointer" (click)="onPessoaClick(p)">
+                    <td>
+                      @if (p.foto) {
+                        <img [src]="hexToDataUrl(p.foto)" alt="Foto" class="foto-tabela" />
+                      } @else {
+                        <span>👤</span>
+                      }
+                    </td>
+                    <td>{{ p.nomeCompleto }}</td>
+                  </tr>
+                } @empty {
+                  <tr><td colspan="2" class="text-center text-muted p-3">Nenhuma pessoa.</td></tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Convidados de Hoje -->
+  <div class="col-md-6 mb-4">
+    <div class="card shadow-sm">
+      <div class="card-header bg-success text-white">
+        <h5 class="mb-0">Convidados Ativos</h5>
+      </div>
+      <div class="card-body p-0">
+        @if (loadingConvidados()) {
+          <div class="text-center p-4">
+            <span class="spinner-border spinner-border-sm"></span> Carregando...
+          </div>
+        } @else {
+          <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+            <table class="table table-sm mb-0">
+              <thead>
+                <tr><th>Foto</th><th>Visitante</th><th>Foto Responsável</th><th>Responsável</th><th>Data Entrada</th><th>Data Saída</th></tr>
+                <tr>
+                  <th></th>
+                  <th>
+                    <input type="text" class="form-control form-control-sm filtro-input"
+                      placeholder="Filtrar visitante..."
+                      [value]="filtroConvidadoNome()"
+                      (input)="filtroConvidadoNome.set($any($event.target).value)" />
+                  </th>
+                  <th></th>
+                  <th>
+                    <input type="text" class="form-control form-control-sm filtro-input"
+                      placeholder="Filtrar responsável..."
+                      [value]="filtroResponsavel()"
+                      (input)="filtroResponsavel.set($any($event.target).value)" />
+                  </th>
+                  <th>
+                    <input type="text" class="form-control form-control-sm filtro-input"
+                      placeholder="YYYY-MM-DD"
+                      [value]="filtroDataEntrada()"
+                      (input)="filtroDataEntrada.set($any($event.target).value)" />
+                  </th>
+                  <th>
+                    <input type="text" class="form-control form-control-sm filtro-input"
+                      placeholder="YYYY-MM-DD"
+                      [value]="filtroDataSaida()"
+                      (input)="filtroDataSaida.set($any($event.target).value)" />
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (c of convidadosHoje(); track c.id) {
+                  <tr>
+                    <td>
+                      @if (c.foto) {
+                        <img [src]="hexToDataUrl(c.foto)" alt="Foto" class="foto-tabela" />
+                      } @else {
+                        <span>👤</span>
+                      }
+                    </td>
+                    <td>{{ c.visitante }}</td>
+                    <td>
+                      @if (c.pessoa?.foto) {
+                        <img [src]="hexToDataUrl(c.pessoa!.foto)" alt="Foto Responsável" class="foto-tabela" />
+                      } @else {
+                        <span>👤</span>
+                      }
+                    </td>
+                    <td>{{ c.pessoa?.nomeCompleto }}</td>
+                    <td>{{ formatarData(c.dataEntrada) }}</td>
+                    <td>{{ formatarData(c.dataSaida) }}</td>
+                  </tr>
+                } @empty {
+                  <tr><td colspan="6" class="text-center text-muted p-3">Nenhum convidado hoje.</td></tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Visitantes da Pessoa -->
+@if (modalPessoaAberto()) {
+  <div class="modal-backdrop show"></div>
+  <div class="modal d-block" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content shadow-lg border-0">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">Visitantes Ativos de {{ pessoaSelecionada()?.nomeCompleto }}</h5>
+          <button type="button" class="btn-close btn-close-white" (click)="fecharModalPessoa()"></button>
+        </div>
+        <div class="modal-body p-0">
+          <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+            <table class="table table-sm mb-0">
+              <thead>
+                <tr><th>Foto</th><th>Visitante</th></tr>
+              </thead>
+              <tbody>
+                @for (v of visitantesDaPessoa(); track v.id) {
+                  <tr>
+                    <td>
+                      @if (v.foto) {
+                        <img [src]="hexToDataUrl(v.foto)" alt="Foto" class="foto-tabela" />
+                      } @else {
+                        <span>👤</span>
+                      }
+                    </td>
+                    <td>{{ v.visitante }}</td>
+                  </tr>
+                } @empty {
+                  <tr><td colspan="2" class="text-center text-muted p-3">Nenhum visitante ativo.</td></tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer border-0">
+          <button class="btn btn-outline-secondary" (click)="fecharModalPessoa()">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

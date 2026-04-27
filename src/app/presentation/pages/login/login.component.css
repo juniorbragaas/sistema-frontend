@@ -1,0 +1,35 @@
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.login-wrapper {
+  width: 100%;
+  max-width: 400px;
+  padding: 0 1rem;
+}
+
+.logo-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.logo-area img {
+  width: 192px;
+  height: 192px;
+  margin-bottom: 0.75rem;
+}
+
+.titulo-sistema {
+  background-color: #0d6efd;
+  color: #ffffff !important;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

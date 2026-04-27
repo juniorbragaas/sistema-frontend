@@ -1,0 +1,62 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.card-header {
+  background-color: #fd7e14 !important;
+  color: #fff !important;
+  border-bottom: 2px solid #e06b0a;
+  text-align: center;
+}
+
+.foto-preview {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #4472c4;
+}
+
+.foto-placeholder {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background-color: #d9e2f3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  border: 3px solid #4472c4;
+}
+
+.camera-video {
+  width: 320px;
+  height: 240px;
+  border-radius: 8px;
+  border: 2px solid #4472c4;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 9998;
+}
+
+.modal.d-block {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  background: transparent;
+}

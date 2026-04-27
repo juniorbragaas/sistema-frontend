@@ -1,1 +1,244 @@
-/* You can add global styles to this file, and also import other style files */
+/* ===== Tema Global do Sistema ===== */
+
+:root {
+  --cor-primaria: #0d6efd;
+  --cor-primaria-escura: #0a58ca;
+  --cor-primaria-clara: #d9e2f3;
+  --cor-primaria-hover: #0b5ed7;
+  --cor-branco: #ffffff;
+  --cor-texto: #212529;
+  --cor-texto-muted: #6c757d;
+  --cor-borda: #b4c6e7;
+  --cor-fundo: #f8f9fa;
+  --cor-sucesso: #198754;
+  --cor-perigo: #dc3545;
+  --cor-alerta: #fd7e14;
+  --page-title-bg: #fd7e14;
+  --page-title-color: #ffffff;
+}
+
+body {
+  font-family: "Segoe UI", Calibri, Arial, sans-serif;
+  background-color: var(--cor-fundo);
+  color: var(--cor-texto);
+}
+
+/* ===== Formulários ===== */
+
+.form-label {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--cor-primaria-escura);
+  margin-bottom: 0.25rem;
+  display: block;
+}
+
+.mb-3 {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-control {
+  border: 1px solid var(--cor-borda);
+  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus {
+  border-color: var(--cor-primaria);
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+  outline: none;
+}
+
+.form-control:read-only {
+  background-color: var(--cor-primaria-clara);
+  border-color: var(--cor-borda);
+  color: var(--cor-texto);
+  cursor: default;
+}
+
+.form-control::placeholder {
+  color: #adb5bd;
+  font-style: italic;
+}
+
+/* ===== Botões ===== */
+
+.btn-primary {
+  background-color: var(--cor-primaria);
+  border-color: var(--cor-primaria);
+}
+
+.btn-primary:hover {
+  background-color: var(--cor-primaria-hover);
+  border-color: var(--cor-primaria-escura);
+}
+
+.btn-primary:focus {
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+}
+
+.btn-outline-primary {
+  color: var(--cor-primaria);
+  border-color: var(--cor-primaria);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--cor-primaria);
+  color: var(--cor-branco);
+}
+
+/* ===== Modal Padrão do Sistema ===== */
+
+.modal-content {
+  border: 0;
+  border-radius: 0.375rem;
+  font-family: "Segoe UI", Calibri, Arial, sans-serif;
+  background-color: #fff;
+  position: relative;
+  z-index: 10000;
+}
+
+.modal-content.shadow-lg {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25) !important;
+}
+
+.modal-header {
+  border-radius: 0.375rem 0.375rem 0 0;
+  padding: 0.75rem 1rem;
+  border-bottom: none;
+}
+
+.modal-header .modal-title {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.modal-header .btn-close-white {
+  filter: brightness(0) invert(1);
+}
+
+.modal-body {
+  padding: 1.25rem;
+}
+
+.modal-body .form-label {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--cor-primaria-escura);
+}
+
+.modal-body .form-control {
+  border: 1px solid var(--cor-borda);
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.modal-body .form-control:focus {
+  border-color: var(--cor-primaria);
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+}
+
+.modal-body .form-control:read-only {
+  background-color: #e9ecef;
+  color: var(--cor-texto);
+}
+
+.modal-footer {
+  padding: 0.75rem 1rem;
+  border-radius: 0 0 0.375rem 0.375rem;
+}
+
+.modal-footer .btn {
+  font-size: 0.875rem;
+  padding: 0.4rem 1.25rem;
+  font-weight: 500;
+}
+
+/* ===== Cards ===== */
+
+.card {
+  border: 1px solid var(--cor-borda);
+  border-radius: 6px;
+}
+
+.card-header {
+  font-weight: 600;
+}
+
+/* ===== Seleção e Checkbox ===== */
+
+.form-select {
+  border: 1px solid var(--cor-borda);
+  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+.form-select:focus {
+  border-color: var(--cor-primaria);
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+}
+
+.form-check-input:checked {
+  background-color: var(--cor-primaria);
+  border-color: var(--cor-primaria);
+}
+
+/* ===== Alertas ===== */
+
+.alert-danger {
+  background-color: #f8d7da;
+  border-color: #f5c2c7;
+  color: #842029;
+}
+
+.alert-success {
+  background-color: #d1e7dd;
+  border-color: #badbcc;
+  color: #0f5132;
+}
+
+/* ===== Modal Backdrop Global ===== */
+
+.modal-backdrop.show {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 9998;
+}
+
+.modal.d-block {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  background: transparent;
+}
+
+/* ===== Datatable Hover Global ===== */
+
+.table tbody tr:hover {
+  background-color: #d6d6d6 !important;
+  transition: background-color 0.15s ease;
+}
+
+/* ===== Título de Página Global ===== */
+
+.page-title-header {
+  background-color: var(--page-title-bg) !important;
+  color: var(--page-title-color) !important;
+  text-align: center;
+  width: 100%;
+}
