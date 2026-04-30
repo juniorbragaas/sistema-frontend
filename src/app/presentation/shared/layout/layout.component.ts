@@ -1,32 +1,38 @@
-import { Component, signal, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, signal, inject, OnInit, OnDestroy, computed } from '@angular/core';
 import { Router, RouterOutlet, RouterLink } from '@angular/router';
+import { NgTemplateOutlet } from '@angular/common';
 import { BarraPrincipalComponent } from '../barra-principal/barra-principal.component';
 import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
 import { AuthPort } from '../../../core/ports/auth.port';
 import { AppConfigService } from '../../../core/services/app-config.service';
+import { MenuStateService, MenuNode } from '../../../core/services/menu-state.service';
 import { LogoutUseCase } from '../../../core/usecases/logout.usecase';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, BarraPrincipalComponent, BreadcrumbComponent],
+  imports: [RouterOutlet, RouterLink, NgTemplateOutlet, BarraPrincipalComponent, BreadcrumbComponent],
   styleUrl: './layout.component.css',
   templateUrl: './layout.component.html',
 })
 export class LayoutComponent implements OnInit, OnDestroy {
-  private authPort = inject(AuthPort);
+  private authPort      = inject(AuthPort);
   private logoutUseCase = inject(LogoutUseCase);
-  private router = inject(Router);
+  private router        = inject(Router);
+  private appConfig     = inject(AppConfigService);
+  readonly menuState    = inject(MenuStateService);
+
   private timerInterval: ReturnType<typeof setInterval> | null = null;
 
   sidebarCollapsed = signal(false);
-  homeMenuOpen = signal(true);
-  pessoasMenuOpen = signal(false);
-  financeiroMenuOpen = signal(false);
-  configMenuOpen = signal(false);
-  tempoRestante = signal('');
-  private appConfig = inject(AppConfigService);
-  appName = this.appConfig.appName;
+  tempoRestante    = signal('');
+
+  appName        = this.appConfig.appName;
+  sidebarBgColor  = this.appConfig.sidebarBgColor;
+  sidebarTextColor = this.appConfig.sidebarTextColor;
+
+  /** Árvore de menus vinda do MenuStateService */
+  arvore = this.menuState.arvore;
 
   ngOnInit(): void {
     this.updateTimer();
@@ -34,41 +40,39 @@ export class LayoutComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.timerInterval) {
-      clearInterval(this.timerInterval);
-    }
+    if (this.timerInterval) clearInterval(this.timerInterval);
   }
 
   toggleSidebar(): void {
     this.sidebarCollapsed.update(v => !v);
   }
 
-  toggleHomeMenu(event: Event): void {
-    event.preventDefault();
-    this.homeMenuOpen.update(v => !v);
+  isExpandido(id: string): boolean {
+    return this.menuState.isExpandido(id);
   }
 
-  togglePessoasMenu(event: Event): void {
+  toggleNode(event: Event, node: MenuNode): void {
     event.preventDefault();
-    this.pessoasMenuOpen.update(v => !v);
+    this.menuState.toggle(node.id);
   }
 
-  toggleFinanceiroMenu(event: Event): void {
-    event.preventDefault();
-    this.financeiroMenuOpen.update(v => !v);
+  temFilhos(node: MenuNode): boolean {
+    return node.filhos.length > 0;
   }
 
-  toggleConfigMenu(event: Event): void {
+  navegar(event: Event, url: string): void {
+    if (url === '#') {
+      event.preventDefault();
+      return;
+    }
     event.preventDefault();
-    this.configMenuOpen.update(v => !v);
+    this.router.navigate([url]);
   }
 
   private updateTimer(): void {
     const expiresAt = this.authPort.getSessionExpiresAt();
-    if (!expiresAt) {
-      this.tempoRestante.set('');
-      return;
-    }
+    if (!expiresAt) { this.tempoRestante.set(''); return; }
+
     const diff = expiresAt - Date.now();
     if (diff <= 0) {
       this.tempoRestante.set('00:00');

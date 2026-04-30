@@ -20,6 +20,8 @@ export class InicioSistemaComponent {
   barTextColor = signal(this.cfg.barTextColor());
   pageTitleBgColor = signal(this.cfg.pageTitleBgColor());
   pageTitleTextColor = signal(this.cfg.pageTitleTextColor());
+  sidebarBgColor = signal(this.cfg.sidebarBgColor());
+  sidebarTextColor = signal(this.cfg.sidebarTextColor());
   btnInserirBg = signal(this.cfg.btnInserirBg());
   btnInserirText = signal(this.cfg.btnInserirText());
   btnVisualizarBg = signal(this.cfg.btnVisualizarBg());
@@ -64,6 +66,7 @@ export class InicioSistemaComponent {
       loginBgImage: this.loginBgPreview(),
       barColor: this.barColor(), barTextColor: this.barTextColor(),
       pageTitleBgColor: this.pageTitleBgColor(), pageTitleTextColor: this.pageTitleTextColor(),
+      sidebarBgColor: this.sidebarBgColor(), sidebarTextColor: this.sidebarTextColor(),
       btnInserirBg: this.btnInserirBg(), btnInserirText: this.btnInserirText(),
       btnVisualizarBg: this.btnVisualizarBg(), btnVisualizarText: this.btnVisualizarText(),
       btnAlterarBg: this.btnAlterarBg(), btnAlterarText: this.btnAlterarText(),

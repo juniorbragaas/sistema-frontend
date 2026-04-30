@@ -1,75 +1,19 @@
 <app-barra-principal (toggleSidebar)="toggleSidebar()" />
 
 <div class="layout">
-  <nav class="sidebar" [class.collapsed]="sidebarCollapsed()">
+  <nav class="sidebar" [class.collapsed]="sidebarCollapsed()"
+    [style.background-color]="sidebarBgColor()"
+    [style.color]="sidebarTextColor()">
+
     <div class="sidebar-header">Menu</div>
     <hr />
+
     <ul class="nav flex-column">
-      <li class="nav-item">
-        <a class="nav-link menu-parent" href="#" (click)="toggleHomeMenu($event)">
-          🏠 Home
-          <span class="menu-arrow" [class.open]="homeMenuOpen()">▸</span>
-        </a>
-        @if (homeMenuOpen()) {
-          <ul class="nav flex-column submenu">
-            <li class="nav-item">
-              <a class="nav-link menu-parent" href="#" (click)="toggleConfigMenu($event)">
-                ⚙️ Configurações
-                <span class="menu-arrow" [class.open]="configMenuOpen()">▸</span>
-              </a>
-              @if (configMenuOpen()) {
-                <ul class="nav flex-column submenu">
-                  <li class="nav-item">
-                    <a class="nav-link" routerLink="/inicio-sistema">🏁 Início do Sistema</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="#">👤 Usuários</a>
-                  </li>
-                </ul>
-              }
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">📊 Dashboard</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">📋 Logs</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link menu-parent" href="#" (click)="toggleFinanceiroMenu($event)">
-                💲 Financeiro
-                <span class="menu-arrow" [class.open]="financeiroMenuOpen()">▸</span>
-              </a>
-              @if (financeiroMenuOpen()) {
-                <ul class="nav flex-column submenu">
-                  <li class="nav-item">
-                    <a class="nav-link" routerLink="/tipo-despesas">💰 Tipo de Despesas</a>
-                  </li>
-                </ul>
-              }
-            </li>
-            <li class="nav-item">
-              <a class="nav-link menu-parent" href="#" (click)="togglePessoasMenu($event)">
-                👥 Pessoas
-                <span class="menu-arrow" [class.open]="pessoasMenuOpen()">▸</span>
-              </a>
-              @if (pessoasMenuOpen()) {
-                <ul class="nav flex-column submenu">
-                  <li class="nav-item">
-                    <a class="nav-link" routerLink="/pessoas">📋 Listar Pessoas</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" routerLink="/convidados">🎫 Convidados</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" routerLink="/alterar-foto">📷 Alterar Foto</a>
-                  </li>
-                </ul>
-              }
-            </li>
-          </ul>
-        }
-      </li>
+      @for (node of arvore(); track node.id) {
+        <ng-container *ngTemplateOutlet="menuItem; context: { $implicit: node }" />
+      }
     </ul>
+
   </nav>
 
   <div class="content-area p-4">
@@ -78,9 +22,51 @@
   </div>
 </div>
 
-<footer class="app-footer">
+<footer class="app-footer"
+  [style.background-color]="sidebarBgColor()"
+  [style.color]="sidebarTextColor()">
   <span>{{ appName() }} © 2026 Todos os direitos reservados</span>
   @if (tempoRestante()) {
     <span class="footer-timer">⏱ Tempo Restante de Sessão: {{ tempoRestante() }}</span>
   }
 </footer>
+
+<!-- ── Template recursivo de item de menu ─────────────────────────────────── -->
+<ng-template #menuItem let-node>
+  <li class="nav-item">
+
+    @if (temFilhos(node)) {
+      <!-- Item com filhos: clicável para expandir/recolher -->
+      <a class="nav-link menu-parent"
+        href="#"
+        (click)="toggleNode($event, node)"
+        [style.color]="sidebarTextColor()"
+        [style.padding-left.px]="12 + node.nivel * 12">
+        <span class="menu-icon">{{ node.url === '#' ? '📁' : '📄' }}</span>
+        {{ node.nome }}
+        <span class="menu-arrow" [class.open]="isExpandido(node.id)">▸</span>
+      </a>
+
+      @if (isExpandido(node.id)) {
+        <ul class="nav flex-column submenu">
+          @for (filho of node.filhos; track filho.id) {
+            <ng-container *ngTemplateOutlet="menuItem; context: { $implicit: filho }" />
+          }
+        </ul>
+      }
+
+    } @else {
+      <!-- Item folha: navega para a URL -->
+      <a class="nav-link"
+        [routerLink]="node.url !== '#' ? node.url : null"
+        [href]="node.url === '#' ? '#' : null"
+        (click)="node.url === '#' ? $event.preventDefault() : null"
+        [style.color]="sidebarTextColor()"
+        [style.padding-left.px]="12 + node.nivel * 12">
+        <span class="menu-icon">📄</span>
+        {{ node.nome }}
+      </a>
+    }
+
+  </li>
+</ng-template>

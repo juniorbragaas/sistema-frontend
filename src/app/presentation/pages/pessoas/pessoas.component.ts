@@ -2,6 +2,7 @@ import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ListarPessoasUseCase } from '../../../core/usecases/listar-pessoas.usecase';
 import { AtualizarPessoaUseCase } from '../../../core/usecases/atualizar-pessoa.usecase';
+import { CriarPessoaUseCase } from '../../../core/usecases/criar-pessoa.usecase';
 import { PessoaApi } from '../../../core/models/pessoa-api.model';
 import { PageTitleComponent } from '../../shared/page-title/page-title.component';
 import { CrudButtonsComponent } from '../../shared/crud-buttons/crud-buttons.component';
@@ -18,6 +19,7 @@ type ModalAcao = 'inserir' | 'visualizar' | 'alterar' | 'excluir' | null;
 export class PessoasComponent implements OnInit {
   private listarPessoasUseCase = inject(ListarPessoasUseCase);
   private atualizarPessoaUseCase = inject(AtualizarPessoaUseCase);
+  private criarPessoaUseCase = inject(CriarPessoaUseCase);
 
   pessoas = signal<PessoaApi[]>([]);
   loading = signal(false);
@@ -170,6 +172,30 @@ export class PessoasComponent implements OnInit {
   confirmarModal(): void {
     const acao = this.modalAcao();
     const data = this.formData();
+
+    if (acao === 'inserir') {
+      const body: Partial<PessoaApi> = {
+        id: crypto.randomUUID(),
+        nomeCompleto: data['nomeCompleto'] ?? '',
+        email: data['email'] ?? '',
+        telefone: data['telefone'] ?? '',
+        endereco: data['endereco'] ?? '',
+        cpf: data['cpf'] ?? '',
+        foto: '',
+        predio: data['predio'] ?? '',
+        andar: data['andar'] ?? '',
+      };
+      this.criarPessoaUseCase.execute(body).subscribe({
+        next: () => {
+          this.fecharModal();
+          this.carregarDados();
+        },
+        error: (err) => {
+          console.error('Erro ao criar pessoa', err);
+        },
+      });
+      return;
+    }
 
     if (acao === 'alterar' && data['id']) {
       const body = {

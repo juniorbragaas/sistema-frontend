@@ -24,4 +24,7 @@ export const environment = {
   btnSimText: '#ffffff',
   btnNaoBg: '#dc3545',
   btnNaoText: '#ffffff',
+  loginBgImage: '',
+  sidebarBgColor: '#212529',
+  sidebarTextColor: '#ffffff',
 };

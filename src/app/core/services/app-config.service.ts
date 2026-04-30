@@ -11,6 +11,7 @@ const KEYS = [
   'btnSalvarBg','btnSalvarText','btnCancelarBg','btnCancelarText',
   'btnSimBg','btnSimText','btnNaoBg','btnNaoText',
   'loginBgImage',
+  'sidebarBgColor','sidebarTextColor',
 ] as const;
 
 type ConfigKey = typeof KEYS[number];
@@ -27,6 +28,7 @@ export class AppConfigService {
   btnSalvarBg; btnSalvarText; btnCancelarBg; btnCancelarText;
   btnSimBg; btnSimText; btnNaoBg; btnNaoText;
   loginBgImage;
+  sidebarBgColor; sidebarTextColor;
 
   constructor() {
     const env = environment as unknown as Record<string, string>;
@@ -59,6 +61,8 @@ export class AppConfigService {
     this.btnNaoBg = this.signals.btnNaoBg.asReadonly();
     this.btnNaoText = this.signals.btnNaoText.asReadonly();
     this.loginBgImage = this.signals.loginBgImage.asReadonly();
+    this.sidebarBgColor = this.signals.sidebarBgColor.asReadonly();
+    this.sidebarTextColor = this.signals.sidebarTextColor.asReadonly();
 
     this.restore();
   }

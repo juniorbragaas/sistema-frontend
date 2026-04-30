@@ -1,0 +1,191 @@
+<div class="card shadow-sm w-100">
+  <app-page-title titulo="Mapeamento de Menu" />
+  <div class="card-body p-0">
+
+    @if (loading()) {
+      <div class="text-center p-4">
+        <span class="spinner-border" role="status"></span>
+        <p class="mt-2 text-muted">Carregando...</p>
+      </div>
+    } @else if (erro()) {
+      <div class="alert alert-danger m-3" role="alert">{{ erro() }}</div>
+    } @else {
+
+      <!-- Barra de ações globais -->
+      <div class="tree-toolbar d-flex align-items-center gap-2 px-3 py-2 border-bottom">
+        <button class="btn btn-sm"
+          [style.background-color]="cfg.btnVisualizarBg()"
+          [style.color]="cfg.btnVisualizarText()"
+          (click)="expandirTodos()">
+          ▾ Expandir tudo
+        </button>
+        <button class="btn btn-sm"
+          [style.background-color]="cfg.btnCancelarBg()"
+          [style.color]="cfg.btnCancelarText()"
+          (click)="recolherTodos()">
+          ▸ Recolher tudo
+        </button>
+        <div class="ms-auto">
+          <app-crud-buttons
+            [mostrarInserir]="true"
+            [mostrarVisualizar]="false"
+            [mostrarAlterar]="false"
+            [mostrarExcluir]="false"
+            (inserir)="onInserir()" />
+        </div>
+      </div>
+
+      <!-- Árvore hierárquica -->
+      <div class="tree-container">
+
+        @if (linhas().length === 0) {
+          <div class="text-center text-muted p-4">Nenhum menu cadastrado.</div>
+        }
+
+        @for (node of linhas(); track node.id) {
+          <div class="tree-row" [class.tree-row-par]="node.nivel % 2 === 0">
+
+            <!-- Indentação + ícone de expansão -->
+            <div class="tree-indent" [style.padding-left.px]="node.nivel * 24 + 8">
+
+              @if (temFilhos(node)) {
+                <button class="tree-toggle" (click)="toggleExpandir(node)" [title]="node.expandido ? 'Recolher' : 'Expandir'">
+                  {{ node.expandido ? '▾' : '▸' }}
+                </button>
+              } @else {
+                <span class="tree-toggle-placeholder"></span>
+              }
+
+              <span class="tree-icon">{{ iconeNo(node) }}</span>
+              <span class="tree-nome" [class.tree-nome-pai]="temFilhos(node)">{{ node.nome }}</span>
+            </div>
+
+            <!-- URL -->
+            <div class="tree-url">
+              <span class="badge-url">{{ node.url }}</span>
+            </div>
+
+            <!-- Ações -->
+            <div class="tree-acoes">
+              <button class="btn btn-sm me-1"
+                [style.background-color]="cfg.btnInserirBg()"
+                [style.color]="cfg.btnInserirText()"
+                title="Adicionar subitem"
+                (click)="onInserir(node.id)">＋</button>
+              <app-crud-buttons
+                [mostrarInserir]="false"
+                (visualizar)="onVisualizar(node)"
+                (alterar)="onAlterar(node)"
+                (excluir)="onExcluir(node)" />
+            </div>
+
+          </div>
+        }
+
+      </div>
+
+      <div class="px-3 py-2 border-top text-muted" style="font-size: 0.8rem;">
+        {{ menus().length }} item(s) cadastrado(s)
+      </div>
+
+    }
+  </div>
+</div>
+
+<!-- ── Modal ──────────────────────────────────────────────────────────────── -->
+@if (modalAberto()) {
+  <div class="modal-backdrop show"></div>
+  <div class="modal d-block" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content shadow-lg border-0">
+
+        <div class="modal-header text-white"
+          [style.background-color]="modalAcao() === 'excluir' ? cfg.btnExcluirBg() : cfg.btnSalvarBg()"
+          [style.color]="modalAcao() === 'excluir' ? cfg.btnExcluirText() : cfg.btnSalvarText()">
+          <h5 class="modal-title">{{ modalTitulo() }}</h5>
+          <button type="button" class="btn-close btn-close-white" (click)="fecharModal()"></button>
+        </div>
+
+        <div class="modal-body">
+          @if (modalAcao() === 'excluir') {
+            <p class="mb-3 fw-bold" [style.color]="cfg.btnExcluirBg()">
+              Tem certeza que deseja excluir <strong>{{ formNome() }}</strong>?
+              @if (itemSelecionado() && getDescendentes_pub(formId()).size > 0) {
+                <br /><span class="text-warning">⚠️ Este item possui subitens que ficarão sem pai.</span>
+              }
+            </p>
+          }
+          @if (erro()) {
+            <div class="alert alert-danger py-2 mb-3" role="alert">{{ erro() }}</div>
+          }
+          <form>
+            <div class="row">
+              @if (modalAcao() !== 'inserir') {
+                <div class="col-12 mb-3">
+                  <label class="form-label">ID</label>
+                  <input type="text" class="form-control" [value]="formId()" readOnly />
+                </div>
+              }
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Nome</label>
+                <input type="text" class="form-control" placeholder="Nome do menu"
+                  [value]="formNome()"
+                  (input)="formNome.set($any($event.target).value)"
+                  [readOnly]="somenteLeitura()" />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">URL</label>
+                <input type="text" class="form-control" placeholder="/caminho ou #"
+                  [value]="formUrl()"
+                  (input)="formUrl.set($any($event.target).value)"
+                  [readOnly]="somenteLeitura()" />
+              </div>
+              <div class="col-12 mb-3">
+                <label class="form-label">Menu Pai</label>
+                @if (somenteLeitura()) {
+                  <input type="text" class="form-control" [value]="nomePai(formIdPai() || null)" readOnly />
+                } @else {
+                  <select class="form-select"
+                    [value]="formIdPai()"
+                    (change)="formIdPai.set($any($event.target).value)">
+                    <option value="">— Nenhum (item raiz) —</option>
+                    @for (pai of menusPai(); track pai.id) {
+                      <option [value]="pai.id" [selected]="pai.id === formIdPai()">{{ pai.nome }}</option>
+                    }
+                  </select>
+                }
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer border-0">
+          <button class="btn"
+            [style.background-color]="cfg.btnCancelarBg()"
+            [style.color]="cfg.btnCancelarText()"
+            (click)="fecharModal()">Cancelar</button>
+
+          @if (modalAcao() !== 'visualizar') {
+            @if (modalAcao() === 'excluir') {
+              <button class="btn"
+                [style.background-color]="cfg.btnExcluirBg()"
+                [style.color]="cfg.btnExcluirText()"
+                (click)="confirmarModal()">🗑️ Excluir</button>
+            } @else if (modalAcao() === 'inserir') {
+              <button class="btn"
+                [style.background-color]="cfg.btnSalvarBg()"
+                [style.color]="cfg.btnSalvarText()"
+                (click)="confirmarModal()">💾 Salvar</button>
+            } @else {
+              <button class="btn"
+                [style.background-color]="cfg.btnAlterarBg()"
+                [style.color]="cfg.btnAlterarText()"
+                (click)="confirmarModal()">✏️ Atualizar</button>
+            }
+          }
+        </div>
+
+      </div>
+    </div>
+  </div>
+}

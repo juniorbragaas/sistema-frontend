@@ -17,37 +17,79 @@ export const routes: Routes = [
         path: 'home',
         loadComponent: () =>
           import('./presentation/pages/home/home.component').then(m => m.HomeComponent),
-        data: { breadcrumb: 'Home' },
+        data: { breadcrumbs: [
+          { label: 'Home', url: '/home' },
+        ]},
       },
       {
         path: 'tipo-despesas',
         loadComponent: () =>
           import('./presentation/pages/tipo-despesas/tipo-despesas.component').then(m => m.TipoDespesasComponent),
-        data: { breadcrumb: 'Tipo de Despesas' },
+        data: { breadcrumbs: [
+          { label: 'Home', url: '/home' },
+          { label: 'Financeiro' },
+          { label: 'Tipo de Despesas', url: '/tipo-despesas' },
+        ]},
       },
       {
         path: 'pessoas',
         loadComponent: () =>
           import('./presentation/pages/pessoas/pessoas.component').then(m => m.PessoasComponent),
-        data: { breadcrumb: 'Pessoas' },
+        data: { breadcrumbs: [
+          { label: 'Home', url: '/home' },
+          { label: 'Pessoas' },
+          { label: 'Listar Pessoas', url: '/pessoas' },
+        ]},
       },
       {
         path: 'alterar-foto',
         loadComponent: () =>
           import('./presentation/pages/alterar-foto/alterar-foto.component').then(m => m.AlterarFotoComponent),
-        data: { breadcrumb: 'Alterar Foto' },
+        data: { breadcrumbs: [
+          { label: 'Home', url: '/home' },
+          { label: 'Pessoas' },
+          { label: 'Alterar Foto', url: '/alterar-foto' },
+        ]},
       },
       {
         path: 'inicio-sistema',
         loadComponent: () =>
           import('./presentation/pages/inicio-sistema/inicio-sistema.component').then(m => m.InicioSistemaComponent),
-        data: { breadcrumb: 'Início do Sistema' },
+        data: { breadcrumbs: [
+          { label: 'Home', url: '/home' },
+          { label: 'Configurações' },
+          { label: 'Início do Sistema', url: '/inicio-sistema' },
+        ]},
+      },
+      {
+        path: 'perfis',
+        loadComponent: () =>
+          import('./presentation/pages/perfis/perfis.component').then(m => m.PerfisComponent),
+        data: { breadcrumbs: [
+          { label: 'Home', url: '/home' },
+          { label: 'Configurações' },
+          { label: 'Perfis', url: '/perfis' },
+        ]},
+      },
+      {
+        path: 'mapeamento-menu',
+        loadComponent: () =>
+          import('./presentation/pages/mapeamento-menu/mapeamento-menu.component').then(m => m.MapeamentoMenuComponent),
+        data: { breadcrumbs: [
+          { label: 'Home', url: '/home' },
+          { label: 'Configurações' },
+          { label: 'Mapeamento de Menu', url: '/mapeamento-menu' },
+        ]},
       },
       {
         path: 'convidados',
         loadComponent: () =>
           import('./presentation/pages/convidados/convidados.component').then(m => m.ConvidadosComponent),
-        data: { breadcrumb: 'Convidados' },
+        data: { breadcrumbs: [
+          { label: 'Home', url: '/home' },
+          { label: 'Pessoas' },
+          { label: 'Convidados', url: '/convidados' },
+        ]},
       },
       {
         path: '',

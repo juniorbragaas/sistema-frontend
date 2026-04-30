@@ -1,0 +1,150 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+/* ── Toolbar ──────────────────────────────────────────────────────────────── */
+.tree-toolbar {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+/* ── Container da árvore ─────────────────────────────────────────────────── */
+.tree-container {
+  font-family: Calibri, "Segoe UI", Arial, sans-serif;
+  font-size: 0.875rem;
+}
+
+/* ── Linha da árvore ─────────────────────────────────────────────────────── */
+.tree-row {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #e9ecef;
+  min-height: 36px;
+  transition: background-color 0.1s;
+}
+
+.tree-row:hover {
+  background-color: #b4c6e7 !important;
+}
+
+.tree-row-par {
+  background-color: #ffffff;
+}
+
+.tree-row:not(.tree-row-par) {
+  background-color: #d9e2f3;
+}
+
+/* ── Coluna de indentação + nome ─────────────────────────────────────────── */
+.tree-indent {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+/* Botão de expandir/recolher */
+.tree-toggle {
+  background: none;
+  border: none;
+  padding: 0 2px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  color: #495057;
+  width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.tree-toggle:hover {
+  color: #0d6efd;
+}
+
+.tree-toggle-placeholder {
+  display: inline-block;
+  width: 18px;
+  flex-shrink: 0;
+}
+
+/* Ícone pasta/arquivo */
+.tree-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+/* Nome do item */
+.tree-nome {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #212529;
+}
+
+.tree-nome-pai {
+  font-weight: 600;
+  color: #1a3a6b;
+}
+
+/* ── Coluna URL ──────────────────────────────────────────────────────────── */
+.tree-url {
+  width: 220px;
+  min-width: 220px;
+  padding: 0 8px;
+  flex-shrink: 0;
+}
+
+.badge-url {
+  display: inline-block;
+  background-color: #e9ecef;
+  color: #495057;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 0.78rem;
+  font-family: monospace;
+  white-space: nowrap;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Coluna de ações ─────────────────────────────────────────────────────── */
+.tree-acoes {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
+  flex-shrink: 0;
+}
+
+.btn-xs {
+  padding: 1px 6px;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  border-radius: 3px;
+}
+
+/* ── Modal ───────────────────────────────────────────────────────────────── */
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 9998;
+}
+
+.modal.d-block {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  z-index: 9999;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  background: transparent;
+}

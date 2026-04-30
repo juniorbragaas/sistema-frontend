@@ -59,6 +59,28 @@
           </div>
         </div>
         <div class="col-md-6 mb-3">
+          <label class="form-label">Cor de Fundo do Menu</label>
+          <div class="d-flex align-items-center gap-2">
+            <input type="color" class="form-control form-control-color"
+              [value]="sidebarBgColor()"
+              (input)="sidebarBgColor.set($any($event.target).value)" />
+            <input type="text" class="form-control" style="max-width: 120px;"
+              [value]="sidebarBgColor()"
+              (input)="sidebarBgColor.set($any($event.target).value)" />
+          </div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Cor da Fonte do Menu</label>
+          <div class="d-flex align-items-center gap-2">
+            <input type="color" class="form-control form-control-color"
+              [value]="sidebarTextColor()"
+              (input)="sidebarTextColor.set($any($event.target).value)" />
+            <input type="text" class="form-control" style="max-width: 120px;"
+              [value]="sidebarTextColor()"
+              (input)="sidebarTextColor.set($any($event.target).value)" />
+          </div>
+        </div>
+        <div class="col-md-6 mb-3">
           <label class="form-label">Cor de Fundo dos Títulos de Página</label>
           <div class="d-flex align-items-center gap-2">
             <input type="color" class="form-control form-control-color"
@@ -83,10 +105,20 @@
       </div>
 
       <div class="mt-2 mb-3">
-        <label class="form-label">Pré-visualização</label>
+        <label class="form-label">Pré-visualização da Barra</label>
         <div class="preview-bar" [style.background-color]="barColor()" [style.color]="barTextColor()">
           <img [src]="iconPreview()" alt="Ícone" class="preview-icon" />
           <span>{{ nome() }}</span>
+        </div>
+      </div>
+
+      <div class="mt-2 mb-3">
+        <label class="form-label">Pré-visualização do Menu</label>
+        <div class="preview-sidebar" [style.background-color]="sidebarBgColor()" [style.color]="sidebarTextColor()">
+          <div class="preview-sidebar-header">Menu</div>
+          <div class="preview-sidebar-item" [style.color]="sidebarTextColor()">🏠 Home ▸</div>
+          <div class="preview-sidebar-item preview-sidebar-sub" [style.color]="sidebarTextColor()">⚙️ Configurações</div>
+          <div class="preview-sidebar-item preview-sidebar-sub" [style.color]="sidebarTextColor()">👥 Pessoas</div>
         </div>
       </div>
 

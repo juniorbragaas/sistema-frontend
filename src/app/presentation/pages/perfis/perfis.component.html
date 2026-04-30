@@ -1,0 +1,126 @@
+<div class="card shadow-sm w-100">
+  <app-page-title titulo="Perfis" />
+  <div class="card-body p-0">
+    @if (loading()) {
+      <div class="text-center p-4">
+        <span class="spinner-border" role="status"></span>
+        <p class="mt-2 text-muted">Carregando...</p>
+      </div>
+    } @else if (erro()) {
+      <div class="alert alert-danger m-3" role="alert">{{ erro() }}</div>
+    } @else {
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <thead>
+            <tr>
+              @for (col of colunas(); track col) {
+                <th>{{ col }}</th>
+              }
+              <th class="text-center col-acao">
+                Ação
+                <app-crud-buttons [mostrarInserir]="true" [mostrarVisualizar]="false" [mostrarAlterar]="false" [mostrarExcluir]="false" (inserir)="onInserir()" />
+              </th>
+            </tr>
+            <tr>
+              @for (col of colunas(); track col) {
+                <th>
+                  <input
+                    type="text"
+                    class="form-control form-control-sm filtro-input"
+                    placeholder="Filtrar..."
+                    [value]="filtros()[col] ?? ''"
+                    (input)="onFiltroChange(col, $any($event.target).value)"
+                  />
+                </th>
+              }
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of dadosPaginados(); track item.id) {
+              <tr>
+                @for (col of colunas(); track col) {
+                  <td>{{ item[col] }}</td>
+                }
+                <td class="text-center text-nowrap">
+                  <app-crud-buttons (visualizar)="onVisualizar(item)" (alterar)="onAlterar(item)" (excluir)="onExcluir(item)" />
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td [attr.colspan]="colunas().length + 1" class="text-center text-muted p-3">
+                  Nenhum registro encontrado.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-content-end align-items-center p-3 border-top gap-3">
+        <span class="text-muted">{{ dadosFiltrados().length }} registro(s) encontrado(s)</span>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="paginaAtual() === 1" (click)="irParaPagina(1)">«</button>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="paginaAtual() === 1" (click)="irParaPagina(paginaAtual() - 1)">‹ Anterior</button>
+        <span>{{ paginaAtual() }} / {{ totalPaginas() }}</span>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="paginaAtual() === totalPaginas()" (click)="irParaPagina(paginaAtual() + 1)">Próxima ›</button>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="paginaAtual() === totalPaginas()" (click)="irParaPagina(totalPaginas())">»</button>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Modal -->
+@if (modalAberto()) {
+  <div class="modal-backdrop show"></div>
+  <div class="modal d-block" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content shadow-lg border-0">
+        <div class="modal-header text-white"
+          [class.bg-primary]="modalAcao() !== 'excluir'"
+          [class.bg-danger]="modalAcao() === 'excluir'">
+          <h5 class="modal-title">{{ modalTitulo() }}</h5>
+          <button type="button" class="btn-close btn-close-white" (click)="fecharModal()"></button>
+        </div>
+        <div class="modal-body">
+          @if (modalAcao() === 'excluir') {
+            <p class="mb-3 text-danger fw-bold">Tem certeza que deseja excluir o registro?</p>
+          }
+          <form>
+            <div class="row">
+              @if (modalAcao() !== 'inserir') {
+                <div class="col-12 mb-3">
+                  <label class="form-label">ID</label>
+                  <input type="text" class="form-control" [value]="formId()" readOnly />
+                </div>
+              }
+              <div class="col-12 mb-3">
+                <label class="form-label">Nome</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Digite o nome do perfil"
+                  [value]="formNome()"
+                  (input)="formNome.set($any($event.target).value)"
+                  [readOnly]="somenteLeitura()"
+                />
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer border-0">
+          <button class="btn btn-outline-secondary" (click)="fecharModal()">Cancelar</button>
+          @if (modalAcao() !== 'visualizar') {
+            <button
+              class="btn"
+              [class.btn-danger]="modalAcao() === 'excluir'"
+              [class.btn-primary]="modalAcao() !== 'excluir'"
+              (click)="confirmarModal()"
+            >
+              @if (modalAcao() === 'excluir') { Excluir } @else if (modalAcao() === 'inserir') { Salvar } @else { Atualizar }
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}

@@ -1,11 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd, RouterLink } from '@angular/router';
-import { filter, map } from 'rxjs/operators';
+import { filter, map, startWith } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
 
-interface Breadcrumb {
+interface BreadcrumbItem {
   label: string;
-  url: string;
+  url?: string;
+  isLast: boolean;
 }
 
 @Component({
@@ -22,33 +23,34 @@ export class BreadcrumbComponent {
   breadcrumbs = toSignal(
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd),
-      map(() => this.buildBreadcrumbs(this.activatedRoute.root))
+      startWith(null),
+      map(() => this.buildBreadcrumbs())
     ),
-    { initialValue: [] as Breadcrumb[] }
+    { initialValue: [] as BreadcrumbItem[] }
   );
 
-  private buildBreadcrumbs(route: ActivatedRoute, url = '', breadcrumbs: Breadcrumb[] = []): Breadcrumb[] {
-    const children = route.children;
+  private buildBreadcrumbs(): BreadcrumbItem[] {
+    try {
+      let route: ActivatedRoute | null = this.activatedRoute.root;
+      let items: { label: string; url?: string }[] = [];
 
-    for (const child of children) {
-      const routeURL = child.snapshot.url.map(segment => segment.path).join('/');
-      if (routeURL) {
-        url += `/${routeURL}`;
+      while (route) {
+        const data = route.snapshot.data;
+        if (data['breadcrumbs']) {
+          items = data['breadcrumbs'];
+        }
+        route = route.firstChild;
       }
 
-      const label = child.snapshot.data['breadcrumb'];
-      if (label) {
-        breadcrumbs.push({ label, url });
-      }
+      if (!items.length) return [];
 
-      this.buildBreadcrumbs(child, url, breadcrumbs);
+      return items.map((item, i) => ({
+        label: item.label,
+        url: item.url,
+        isLast: i === items.length - 1,
+      }));
+    } catch {
+      return [];
     }
-
-    // Sempre garantir que Home é o primeiro item
-    if (breadcrumbs.length > 0 && breadcrumbs[0].label !== 'Home') {
-      breadcrumbs.unshift({ label: 'Home', url: '/home' });
-    }
-
-    return breadcrumbs;
   }
 }

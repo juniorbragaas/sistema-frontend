@@ -18,6 +18,10 @@ export class PessoaRepository extends PessoaPort {
     return this.http.get<PessoaApi>(`${API_URL}/${id}`);
   }
 
+  criar(pessoa: Partial<PessoaApi>): Observable<PessoaApi> {
+    return this.http.post<PessoaApi>(API_URL, pessoa);
+  }
+
   atualizar(id: string, pessoa: Partial<PessoaApi>): Observable<PessoaApi> {
     return this.http.put<PessoaApi>(`${API_URL}/${id}`, pessoa);
   }

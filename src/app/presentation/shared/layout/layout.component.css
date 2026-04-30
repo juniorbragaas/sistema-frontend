@@ -64,19 +64,39 @@
 .menu-arrow {
   font-size: 0.75rem;
   transition: transform 0.2s ease;
+  flex-shrink: 0;
 }
 
 .menu-arrow.open {
   transform: rotate(90deg);
 }
 
+.menu-icon {
+  font-size: 0.9rem;
+  margin-right: 4px;
+  flex-shrink: 0;
+}
+
+/* Submenus não precisam mais de padding fixo — a indentação é via [style.padding-left] */
 .submenu {
-  padding-left: 1rem;
+  padding-left: 0;
 }
 
 .submenu .nav-link {
-  padding: 0.5rem 1rem;
   font-size: 0.9rem;
+}
+
+/* Garante que o nome do item ocupe o espaço disponível */
+.sidebar .nav-link {
+  color: rgba(255, 255, 255, 0.75);
+  padding: 0.6rem 1rem;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .content-area {
