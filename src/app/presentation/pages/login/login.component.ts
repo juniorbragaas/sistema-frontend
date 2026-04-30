@@ -19,6 +19,7 @@ export class LoginComponent {
 
   appName = this.appConfig.appName;
   appIcon = this.appConfig.appIcon;
+  loginBgImage = this.appConfig.loginBgImage;
 
   loginForm = new FormGroup({
     nome: new FormControl('', Validators.required),

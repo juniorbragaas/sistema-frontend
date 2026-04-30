@@ -15,6 +15,7 @@ export class InicioSistemaComponent {
 
   nome = signal(this.cfg.appName());
   iconPreview = signal(this.cfg.appIcon());
+  loginBgPreview = signal(this.cfg.loginBgImage());
   barColor = signal(this.cfg.barColor());
   barTextColor = signal(this.cfg.barTextColor());
   pageTitleBgColor = signal(this.cfg.pageTitleBgColor());
@@ -45,9 +46,22 @@ export class InicioSistemaComponent {
     reader.readAsDataURL(input.files[0]);
   }
 
+  onLoginBgChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+    const reader = new FileReader();
+    reader.onload = () => this.loginBgPreview.set(reader.result as string);
+    reader.readAsDataURL(input.files[0]);
+  }
+
+  removerLoginBg(): void {
+    this.loginBgPreview.set('');
+  }
+
   salvar(): void {
     this.cfg.update({
       appName: this.nome(), appIcon: this.iconPreview(),
+      loginBgImage: this.loginBgPreview(),
       barColor: this.barColor(), barTextColor: this.barTextColor(),
       pageTitleBgColor: this.pageTitleBgColor(), pageTitleTextColor: this.pageTitleTextColor(),
       btnInserirBg: this.btnInserirBg(), btnInserirText: this.btnInserirText(),

@@ -41,3 +41,25 @@
   padding: 2px;
   cursor: pointer;
 }
+
+.login-bg-preview {
+  width: 96px;
+  height: 60px;
+  object-fit: cover;
+  border: 1px solid #b4c6e7;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.login-bg-placeholder {
+  width: 96px;
+  height: 60px;
+  border: 1px dashed #b4c6e7;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: #aaa;
+  flex-shrink: 0;
+}

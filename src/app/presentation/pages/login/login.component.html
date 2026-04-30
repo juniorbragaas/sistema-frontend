@@ -1,4 +1,6 @@
-<div class="login-wrapper">
+<div class="login-wrapper"
+  [style.background-image]="loginBgImage() ? 'url(' + loginBgImage() + ')' : null"
+  [class.has-bg]="loginBgImage()">
   <div class="logo-area">
     <img [src]="appIcon()" alt="Logo" />
   </div>
