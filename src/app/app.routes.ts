@@ -32,6 +32,16 @@ export const routes: Routes = [
         ]},
       },
       {
+        path: 'tipo-gastos',
+        loadComponent: () =>
+          import('./presentation/pages/tipo-gastos/tipo-gastos.component').then(m => m.TipoGastosComponent),
+        data: { breadcrumbs: [
+          { label: 'Home', url: '/home' },
+          { label: 'Financeiro' },
+          { label: 'Tipo de Gastos', url: '/tipo-gastos' },
+        ]},
+      },
+      {
         path: 'pessoas',
         loadComponent: () =>
           import('./presentation/pages/pessoas/pessoas.component').then(m => m.PessoasComponent),
@@ -79,6 +89,16 @@ export const routes: Routes = [
           { label: 'Home', url: '/home' },
           { label: 'Configurações' },
           { label: 'Mapeamento de Menu', url: '/mapeamento-menu' },
+        ]},
+      },
+      {
+        path: 'usuarios',
+        loadComponent: () =>
+          import('./presentation/pages/usuarios/usuarios.component').then(m => m.UsuariosComponent),
+        data: { breadcrumbs: [
+          { label: 'Home', url: '/home' },
+          { label: 'Configurações' },
+          { label: 'Usuários', url: '/usuarios' },
         ]},
       },
       {

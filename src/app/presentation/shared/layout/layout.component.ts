@@ -6,6 +6,7 @@ import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
 import { AuthPort } from '../../../core/ports/auth.port';
 import { AppConfigService } from '../../../core/services/app-config.service';
 import { MenuStateService, MenuNode } from '../../../core/services/menu-state.service';
+import { MenuSyncService } from '../../../core/services/menu-sync.service';
 import { LogoutUseCase } from '../../../core/usecases/logout.usecase';
 
 @Component({
@@ -20,6 +21,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
   private logoutUseCase = inject(LogoutUseCase);
   private router        = inject(Router);
   private appConfig     = inject(AppConfigService);
+  private menuSync      = inject(MenuSyncService);
   readonly menuState    = inject(MenuStateService);
 
   private timerInterval: ReturnType<typeof setInterval> | null = null;
@@ -35,6 +37,9 @@ export class LayoutComponent implements OnInit, OnDestroy {
   arvore = this.menuState.arvore;
 
   ngOnInit(): void {
+    // Carrega os menus após o login — o LayoutComponent só é instanciado
+    // dentro da rota protegida pelo authGuard, então o usuário já está autenticado
+    this.menuSync.sincronizar();
     this.updateTimer();
     this.timerInterval = setInterval(() => this.updateTimer(), 1000);
   }
@@ -67,6 +72,31 @@ export class LayoutComponent implements OnInit, OnDestroy {
     }
     event.preventDefault();
     this.router.navigate([url]);
+  }
+
+  /** Converte hex string salvo no banco para data URL usável em <img src> */
+  hexToDataUrl(hex: string | null): string {
+    if (!hex) return '';
+    if (hex.startsWith('data:')) return hex;
+    try {
+      const bytes = new Uint8Array(hex.length / 2);
+      for (let i = 0; i < hex.length; i += 2) {
+        bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
+      }
+      const isPng = bytes[0] === 0x89 && bytes[1] === 0x50;
+      const isSvg = hex.startsWith('3c73') || hex.startsWith('3c3f');
+      const mime  = isPng ? 'image/png' : isSvg ? 'image/svg+xml' : 'image/x-icon';
+      let binary = '';
+      bytes.forEach(b => binary += String.fromCharCode(b));
+      return `data:${mime};base64,${btoa(binary)}`;
+    } catch {
+      return '';
+    }
+  }
+
+  /** Ícone padrão (emoji) quando não há imagem no banco */
+  iconeDefault(node: MenuNode): string {
+    return this.temFilhos(node) ? '📁' : '📄';
   }
 
   private updateTimer(): void {

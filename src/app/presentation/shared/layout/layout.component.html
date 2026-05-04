@@ -42,7 +42,11 @@
         (click)="toggleNode($event, node)"
         [style.color]="sidebarTextColor()"
         [style.padding-left.px]="12 + node.nivel * 12">
-        <span class="menu-icon">{{ node.url === '#' ? '📁' : '📄' }}</span>
+        @if (node.icone && hexToDataUrl(node.icone)) {
+          <img [src]="hexToDataUrl(node.icone)" alt="" class="menu-icon-img" />
+        } @else {
+          <span class="menu-icon">📁</span>
+        }
         {{ node.nome }}
         <span class="menu-arrow" [class.open]="isExpandido(node.id)">▸</span>
       </a>
@@ -63,7 +67,11 @@
         (click)="node.url === '#' ? $event.preventDefault() : null"
         [style.color]="sidebarTextColor()"
         [style.padding-left.px]="12 + node.nivel * 12">
-        <span class="menu-icon">📄</span>
+        @if (node.icone && hexToDataUrl(node.icone)) {
+          <img [src]="hexToDataUrl(node.icone)" alt="" class="menu-icon-img" />
+        } @else {
+          <span class="menu-icon">📄</span>
+        }
         {{ node.nome }}
       </a>
     }

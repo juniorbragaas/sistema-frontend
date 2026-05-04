@@ -1,0 +1,227 @@
+<div class="card shadow-sm w-100">
+  <app-page-title titulo="Usuários" />
+  <div class="card-body p-0">
+    @if (loading()) {
+      <div class="text-center p-4">
+        <span class="spinner-border" role="status"></span>
+        <p class="mt-2 text-muted">Carregando...</p>
+      </div>
+    } @else if (erro()) {
+      <div class="alert alert-danger m-3" role="alert">{{ erro() }}</div>
+    } @else {
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <thead>
+            <tr>
+              @for (col of colunas(); track col) {
+                <th>{{ col }}</th>
+              }
+              <th class="text-center col-acao">
+                Ação
+                <app-crud-buttons
+                  [mostrarInserir]="true"
+                  [mostrarVisualizar]="false"
+                  [mostrarAlterar]="false"
+                  [mostrarExcluir]="false"
+                  (inserir)="onInserir()" />
+              </th>
+            </tr>
+            <tr>
+              @for (col of colunas(); track col) {
+                <th>
+                  <input type="text" class="form-control form-control-sm filtro-input"
+                    placeholder="Filtrar..."
+                    [value]="filtros()[col] ?? ''"
+                    (input)="onFiltroChange(col, $any($event.target).value)" />
+                </th>
+              }
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of dadosPaginados(); track item.id) {
+              <tr>
+                @for (col of colunas(); track col) {
+                  <td>
+                    @if (col === 'dataCriacao') {
+                      {{ formatarData(item.dataCriacao) }}
+                    } @else {
+                      {{ item[col] }}
+                    }
+                  </td>
+                }
+                <td class="text-center text-nowrap">
+                  <app-crud-buttons
+                    (visualizar)="onVisualizar(item)"
+                    (alterar)="onAlterar(item)"
+                    (excluir)="onExcluir(item)" />
+                  <button class="btn btn-sm ms-1"
+                    [style.background-color]="cfg.btnAlterarBg()"
+                    [style.color]="cfg.btnAlterarText()"
+                    title="Reset Senha"
+                    (click)="onResetSenha(item)">🔑 Reset</button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td [attr.colspan]="colunas().length + 1" class="text-center text-muted p-3">
+                  Nenhum registro encontrado.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-content-end align-items-center p-3 border-top gap-3">
+        <span class="text-muted">{{ dadosFiltrados().length }} registro(s) encontrado(s)</span>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="paginaAtual() === 1" (click)="irParaPagina(1)">«</button>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="paginaAtual() === 1" (click)="irParaPagina(paginaAtual() - 1)">‹ Anterior</button>
+        <span>{{ paginaAtual() }} / {{ totalPaginas() }}</span>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="paginaAtual() === totalPaginas()" (click)="irParaPagina(paginaAtual() + 1)">Próxima ›</button>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="paginaAtual() === totalPaginas()" (click)="irParaPagina(totalPaginas())">»</button>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Modal -->
+@if (modalAberto()) {
+  <div class="modal-backdrop show"></div>
+  <div class="modal d-block" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content shadow-lg border-0">
+
+        <div class="modal-header text-white"
+          [style.background-color]="modalAcao() === 'excluir' ? cfg.btnExcluirBg() : modalAcao() === 'reset-senha' ? cfg.btnAlterarBg() : cfg.btnSalvarBg()"
+          [style.color]="modalAcao() === 'excluir' ? cfg.btnExcluirText() : modalAcao() === 'reset-senha' ? cfg.btnAlterarText() : cfg.btnSalvarText()">
+          <h5 class="modal-title">{{ modalTitulo() }}</h5>
+          <button type="button" class="btn-close btn-close-white" (click)="fecharModal()"></button>
+        </div>
+
+        <div class="modal-body">
+          @if (modalAcao() === 'excluir') {
+            <p class="mb-3 fw-bold" [style.color]="cfg.btnExcluirBg()">
+              Tem certeza que deseja excluir o usuário <strong>{{ formNome() }}</strong>?
+            </p>
+          }
+          @if (modalAcao() === 'reset-senha') {
+            <div class="alert alert-warning d-flex align-items-center gap-2 mb-3">
+              <span style="font-size:1.5rem">🔑</span>
+              <div>
+                <strong>Atenção!</strong> A senha do usuário <strong>{{ formNome() }}</strong>
+                será redefinida para o valor padrão <code>123456</code>.
+                <br />O usuário deverá alterar a senha no próximo acesso.
+              </div>
+            </div>
+          }
+          @if (erro()) {
+            <div class="alert alert-danger py-2 mb-3" role="alert">{{ erro() }}</div>
+          }
+          @if (modalAcao() !== 'reset-senha') {
+          <form>
+            <div class="row">
+              @if (modalAcao() !== 'inserir') {
+                <div class="col-12 mb-3">
+                  <label class="form-label">ID</label>
+                  <input type="text" class="form-control" [value]="formId()" readOnly />
+                </div>
+              }
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Nome</label>
+                <input type="text" class="form-control" placeholder="Nome de login"
+                  [value]="formNome()"
+                  (input)="formNome.set($any($event.target).value)"
+                  [readOnly]="somenteLeitura()" />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">E-mail</label>
+                <input type="email" class="form-control" placeholder="email@exemplo.com"
+                  [value]="formEmail()"
+                  (input)="formEmail.set($any($event.target).value)"
+                  [readOnly]="somenteLeitura()" />
+              </div>
+
+              @if (modalAcao() !== 'visualizar' && modalAcao() !== 'excluir') {
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">
+                    Senha
+                    @if (modalAcao() === 'alterar') {
+                      <small class="text-muted ms-1">(deixe em branco para não alterar)</small>
+                    }
+                  </label>
+                  <input type="password" class="form-control" placeholder="••••••••"
+                    [value]="formSenha()"
+                    (input)="formSenha.set($any($event.target).value)" />
+                </div>
+              }
+
+              @if (modalAcao() !== 'inserir') {
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Data de Criação</label>
+                  <input type="text" class="form-control"
+                    [value]="formatarData(formDataCriacao())" readOnly />
+                </div>
+              }
+
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Pessoa <small class="text-muted">(opcional)</small></label>
+                @if (somenteLeitura()) {
+                  <!-- Visualizar/Excluir: mostra o nome da pessoa -->
+                  <input type="text" class="form-control"
+                    [value]="nomePessoa(formIdPessoa() || null)"
+                    readOnly />
+                } @else {
+                  <!-- Inserir/Alterar: dropdown com pessoas -->
+                  <select class="form-select"
+                    [value]="formIdPessoa()"
+                    (change)="formIdPessoa.set($any($event.target).value)">
+                    <option value="">— Nenhuma —</option>
+                    @for (pessoa of pessoas(); track pessoa.id) {
+                      <option [value]="pessoa.id" [selected]="pessoa.id === formIdPessoa()">
+                        {{ pessoa.nomeCompleto }}
+                      </option>
+                    }
+                  </select>
+                }
+              </div>
+            </div>
+          </form>
+          } <!-- fim @if (modalAcao() !== 'reset-senha') -->
+        </div>
+
+        <div class="modal-footer border-0">
+          <button class="btn"
+            [style.background-color]="cfg.btnCancelarBg()"
+            [style.color]="cfg.btnCancelarText()"
+            (click)="fecharModal()">Cancelar</button>
+
+          @if (modalAcao() !== 'visualizar') {
+            @if (modalAcao() === 'excluir') {
+              <button class="btn"
+                [style.background-color]="cfg.btnExcluirBg()"
+                [style.color]="cfg.btnExcluirText()"
+                (click)="confirmarModal()">🗑️ Excluir</button>
+            } @else if (modalAcao() === 'inserir') {
+              <button class="btn"
+                [style.background-color]="cfg.btnSalvarBg()"
+                [style.color]="cfg.btnSalvarText()"
+                (click)="confirmarModal()">💾 Salvar</button>
+            } @else if (modalAcao() === 'reset-senha') {
+              <button class="btn"
+                [style.background-color]="cfg.btnAlterarBg()"
+                [style.color]="cfg.btnAlterarText()"
+                (click)="confirmarModal()">🔑 Confirmar Reset</button>
+            } @else {
+              <button class="btn"
+                [style.background-color]="cfg.btnAlterarBg()"
+                [style.color]="cfg.btnAlterarText()"
+                (click)="confirmarModal()">✏️ Atualizar</button>
+            }
+          }
+        </div>
+
+      </div>
+    </div>
+  </div>
+}

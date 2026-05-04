@@ -22,9 +22,14 @@ export class BarraPrincipalComponent {
   appIcon = this.appConfig.appIcon;
   barColor = this.appConfig.barColor;
   barTextColor = this.appConfig.barTextColor;
-  nomeCompleto = computed(() => this.authPort.currentUser()?.pessoa.nomeCompleto ?? '');
+  nomeCompleto = computed(() => {
+    const user = this.authPort.currentUser();
+    return user?.pessoa?.nomeCompleto ?? '';
+  });
+
   fotoUsuario = computed(() => {
-    const foto = this.authPort.currentUser()?.pessoa.foto ?? '';
+    const user = this.authPort.currentUser();
+    const foto = user?.pessoa?.foto ?? '';
     if (!foto) return '';
 
     // Se já é uma data URL, retorna direto

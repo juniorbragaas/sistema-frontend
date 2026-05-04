@@ -48,6 +48,7 @@ export class MapeamentoMenuComponent implements OnInit {
   formNome  = signal('');
   formUrl   = signal('');
   formIdPai = signal('');
+  formIcone = signal<string>('');   // hex string do ícone (base64 data URL para preview)
 
   // ── Árvore ──────────────────────────────────────────────────────────────────
 
@@ -186,6 +187,7 @@ export class MapeamentoMenuComponent implements OnInit {
     this.formNome.set(item?.nome ?? '');
     this.formUrl.set(item?.url ?? '');
     this.formIdPai.set(item?.idPai ?? '');
+    this.formIcone.set(item?.icone ?? '');
   }
 
   onInserir(paiId?: string): void {
@@ -224,6 +226,51 @@ export class MapeamentoMenuComponent implements OnInit {
     this.erro.set('');
   }
 
+  /** Lê o arquivo .ico/.png/.svg selecionado e converte para hex string */
+  onIconeChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+    const file = input.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+      const arrayBuffer = reader.result as ArrayBuffer;
+      const bytes = new Uint8Array(arrayBuffer);
+      // Converte bytes para string hexadecimal
+      const hex = Array.from(bytes)
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+      this.formIcone.set(hex);
+    };
+    reader.readAsArrayBuffer(file);
+    // Limpa o input para permitir reselecionar o mesmo arquivo
+    input.value = '';
+  }
+
+  removerIcone(): void {
+    this.formIcone.set('');
+  }
+
+  /** Converte hex string para data URL para exibir preview */
+  hexToDataUrl(hex: string): string {
+    if (!hex) return '';
+    if (hex.startsWith('data:')) return hex;
+    try {
+      const bytes = new Uint8Array(hex.length / 2);
+      for (let i = 0; i < hex.length; i += 2) {
+        bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
+      }
+      // Detecta PNG pelos magic bytes (89 50 4E 47)
+      const isPng = bytes[0] === 0x89 && bytes[1] === 0x50;
+      const isSvg = hex.startsWith('3c73') || hex.startsWith('3c3f'); // '<s' ou '<?'
+      const mime  = isPng ? 'image/png' : isSvg ? 'image/svg+xml' : 'image/x-icon';
+      let binary = '';
+      bytes.forEach(b => binary += String.fromCharCode(b));
+      return `data:${mime};base64,${btoa(binary)}`;
+    } catch {
+      return '';
+    }
+  }
+
   confirmarModal(): void {
     const acao = this.modalAcao();
     const id   = this.formId();
@@ -236,6 +283,7 @@ export class MapeamentoMenuComponent implements OnInit {
       nome:  this.formNome().trim(),
       url:   this.formUrl().trim() || '#',
       idPai: this.formIdPai() || null,
+      icone: this.formIcone() || null,
     };
 
     if (acao === 'inserir') {

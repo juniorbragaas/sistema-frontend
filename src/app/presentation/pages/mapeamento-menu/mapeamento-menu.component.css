@@ -112,6 +112,48 @@
   text-overflow: ellipsis;
 }
 
+/* ── Coluna Ícone ────────────────────────────────────────────────────────── */
+.tree-icone {
+  width: 48px;
+  min-width: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0 4px;
+}
+
+.icone-preview-tree {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+/* ── Preview do ícone no modal ───────────────────────────────────────────── */
+.icone-preview-modal {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border: 1px solid #b4c6e7;
+  border-radius: 4px;
+  padding: 4px;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.icone-placeholder {
+  width: 48px;
+  height: 48px;
+  border: 1px dashed #b4c6e7;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: #aaa;
+  flex-shrink: 0;
+}
+
 /* ── Coluna de ações ─────────────────────────────────────────────────────── */
 .tree-acoes {
   display: flex;

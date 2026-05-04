@@ -1,25 +1,17 @@
-export interface Pessoa {
+export interface PessoaResumo {
+  id: string;
   nomeCompleto: string;
-  email: string;
-  telefone: string;
-  endereco: string;
-  cpf: string;
-  foto: string;
-  predio: string;
-  andar: string;
+  foto: string | null;
+  [key: string]: unknown;
 }
 
 export interface Usuario {
-  id: number;
+  id: string;
   nome: string;
   email: string;
   senha: string;
   dataCriacao: string;
-  idPessoa: number;
-  pessoa: Pessoa;
-}
-
-export interface LoginRequest {
-  nome: string;
-  senha: string;
+  idPessoa: string | null;
+  pessoa?: PessoaResumo | null;
+  [key: string]: unknown;
 }

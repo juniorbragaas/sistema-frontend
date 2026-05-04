@@ -57,12 +57,20 @@
               }
 
               <span class="tree-icon">{{ iconeNo(node) }}</span>
-              <span class="tree-nome" [class.tree-nome-pai]="temFilhos(node)">{{ node.nome }}</span>
-            </div>
+              <span class="tree-nome" [class.tree-nome-pai]="temFilhos(node)">{{ node.nome }}</span>            </div>
 
             <!-- URL -->
             <div class="tree-url">
               <span class="badge-url">{{ node.url }}</span>
+            </div>
+
+            <!-- Ícone -->
+            <div class="tree-icone">
+              @if (node.icone) {
+                <img [src]="hexToDataUrl(node.icone)" alt="ícone" class="icone-preview-tree" />
+              } @else {
+                <span class="text-muted" style="font-size:0.75rem;">—</span>
+              }
             </div>
 
             <!-- Ações -->
@@ -154,6 +162,40 @@
                     }
                   </select>
                 }
+              </div>
+
+              <!-- Ícone -->
+              <div class="col-12 mb-3">
+                <label class="form-label">Ícone</label>
+                <div class="d-flex align-items-center gap-3">
+                  <!-- Preview -->
+                  @if (formIcone()) {
+                    <img [src]="hexToDataUrl(formIcone())" alt="ícone" class="icone-preview-modal" />
+                  } @else {
+                    <div class="icone-placeholder">Sem ícone</div>
+                  }
+
+                  @if (!somenteLeitura()) {
+                    <div class="d-flex flex-column gap-2">
+                      <input type="file"
+                        accept=".ico,.png,.svg,.jpg,.jpeg"
+                        class="d-none"
+                        #iconeInput
+                        (change)="onIconeChange($event)" />
+                      <button type="button" class="btn btn-sm btn-outline-primary"
+                        (click)="iconeInput.click()">
+                        📁 Carregar ícone
+                      </button>
+                      @if (formIcone()) {
+                        <button type="button" class="btn btn-sm btn-outline-danger"
+                          (click)="removerIcone()">
+                          🗑️ Remover
+                        </button>
+                      }
+                    </div>
+                    <small class="text-muted">Aceita .ico, .png, .svg, .jpg</small>
+                  }
+                </div>
               </div>
             </div>
           </form>

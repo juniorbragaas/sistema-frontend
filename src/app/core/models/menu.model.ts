@@ -3,5 +3,6 @@ export interface MenuApi {
   nome: string;
   url: string;
   idPai: string | null;
+  icone: string | null;
   [key: string]: unknown;
 }
