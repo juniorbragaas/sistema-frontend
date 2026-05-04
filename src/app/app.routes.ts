@@ -42,6 +42,16 @@ export const routes: Routes = [
         ]},
       },
       {
+        path: 'controle-custos',
+        loadComponent: () =>
+          import('./presentation/pages/controle-custos/controle-custos.component').then(m => m.ControleCustosComponent),
+        data: { breadcrumbs: [
+          { label: 'Home', url: '/home' },
+          { label: 'Financeiro' },
+          { label: 'Controle de Custos', url: '/controle-custos' },
+        ]},
+      },
+      {
         path: 'pessoas',
         loadComponent: () =>
           import('./presentation/pages/pessoas/pessoas.component').then(m => m.PessoasComponent),

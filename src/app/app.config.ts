@@ -22,6 +22,8 @@ import { UsuarioPort } from './core/ports/usuario.port';
 import { UsuarioRepository } from './data/repositories/usuario.repository';
 import { ReservaPort } from './core/ports/reserva.port';
 import { ReservaRepository } from './data/repositories/reserva.repository';
+import { ControleCustosPort } from './core/ports/controle-custos.port';
+import { ControleCustosRepository } from './data/repositories/controle-custos.repository';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -29,14 +31,15 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(),
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
-    { provide: AuthPort,       useClass: AuthRepository },
-    { provide: DespesaPort,    useClass: DespesaRepository },
-    { provide: PessoaPort,     useClass: PessoaRepository },
-    { provide: ConvidadoPort,  useClass: ConvidadoRepository },
-    { provide: PerfilPort,     useClass: PerfilRepository },
-    { provide: MenuPort,       useClass: MenuRepository },
-    { provide: TipoGastoPort,  useClass: TipoGastoRepository },
-    { provide: UsuarioPort,    useClass: UsuarioRepository },
-    { provide: ReservaPort,    useClass: ReservaRepository },
+    { provide: AuthPort,           useClass: AuthRepository },
+    { provide: DespesaPort,        useClass: DespesaRepository },
+    { provide: PessoaPort,         useClass: PessoaRepository },
+    { provide: ConvidadoPort,      useClass: ConvidadoRepository },
+    { provide: PerfilPort,         useClass: PerfilRepository },
+    { provide: MenuPort,           useClass: MenuRepository },
+    { provide: TipoGastoPort,      useClass: TipoGastoRepository },
+    { provide: UsuarioPort,        useClass: UsuarioRepository },
+    { provide: ReservaPort,        useClass: ReservaRepository },
+    { provide: ControleCustosPort, useClass: ControleCustosRepository },
   ],
 };

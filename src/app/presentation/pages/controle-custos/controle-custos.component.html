@@ -1,0 +1,318 @@
+<div class="card shadow-sm w-100">
+  <app-page-title titulo="Controle de Custos" />
+  <div class="card-body p-0">
+    @if (loading()) {
+      <div class="text-center p-4">
+        <span class="spinner-border" role="status"></span>
+        <p class="mt-2 text-muted">Carregando...</p>
+      </div>
+    } @else if (erro()) {
+      <div class="alert alert-danger m-3" role="alert">{{ erro() }}</div>
+    } @else {
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <thead>
+            <tr>
+              @for (col of colunas(); track col) {
+                <th class="th-sort" (click)="ordenarPor(col)">
+                  {{ obterNomeColuna(col) }} <span class="sort-icon">{{ iconeSort(col) }}</span>
+                </th>
+              }
+              <th class="text-center col-acao">
+                Ação
+                <app-crud-buttons
+                  [mostrarInserir]="true"
+                  [mostrarVisualizar]="false"
+                  [mostrarAlterar]="false"
+                  [mostrarExcluir]="false"
+                  (inserir)="onInserir()" />
+              </th>
+            </tr>
+            <tr>
+              @for (col of colunas(); track col) {
+                <th>
+                  <input type="text" class="form-control form-control-sm filtro-input"
+                    placeholder="Filtrar..."
+                    [value]="filtros()[col] || ''"
+                    (input)="onFiltroChange(col, $any($event.target).value)" />
+                </th>
+              }
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of dadosPaginados(); track item.id) {
+              <tr>
+                @for (col of colunas(); track col) {
+                  <td>
+                    @if (col === 'dataVencimentoDia') {
+                      {{ obterDia(item.dataVencimento) }}
+                    } @else if (col === 'dataVencimentoMes') {
+                      {{ obterMes(item.dataVencimento) }}
+                    } @else if (col === 'dataVencimentoAno') {
+                      {{ obterAno(item.dataVencimento) }}
+                    } @else if (col === 'dataPagamentoDia') {
+                      {{ obterDia(item.dataPagamento) }}
+                    } @else if (col === 'dataPagamentoMes') {
+                      {{ obterMes(item.dataPagamento) }}
+                    } @else if (col === 'dataPagamentoAno') {
+                      {{ obterAno(item.dataPagamento) }}
+                    } @else if (col === 'statusAtraso') {
+                      {{ item[col] ? 'Sim' : 'Não' }}
+                    } @else if (col === 'tipoDespesaId') {
+                      {{ item.tipoDespesa?.nome || item[col] }}
+                    } @else if (col === 'tipoGastoId') {
+                      {{ item.tipoGasto?.nome || item[col] }}
+                    } @else if (col === 'tipoLancamento') {
+                      {{ obterNomeTipoLancamento(item[col]) }}
+                    } @else if (col === 'valor' || col === 'jurosPorAtraso') {
+                      {{ formatarMoeda(item[col]) }}
+                    } @else if (col === 'valorPagamento') {
+                      @if (item.tipoLancamento === 1) {
+                        <span style="color: #28a745; font-weight: bold;">{{ formatarMoeda(item[col]) }}</span>
+                      } @else if (item.tipoLancamento === 2) {
+                        <span style="color: #dc3545; font-weight: bold;">{{ formatarMoeda(item[col]) }}</span>
+                      } @else {
+                        {{ formatarMoeda(item[col]) }}
+                      }
+                    } @else {
+                      {{ item[col] }}
+                    }
+                  </td>
+                }
+                <td class="text-center text-nowrap">
+                  <app-crud-buttons
+                    (visualizar)="onVisualizar(item)"
+                    (alterar)="onAlterar(item)"
+                    (excluir)="onExcluir(item)" />
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td [attr.colspan]="colunas().length + 1" class="text-center text-muted p-3">
+                  Nenhum registro encontrado.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <tbody>
+            <tr style="background-color: #f8f9fa; border-top: 2px solid #dee2e6;">
+              <td colspan="100%" class="p-3">
+                <div class="d-flex justify-content-between align-items-flex-start">
+                  <div style="flex: 1;">
+                    <!-- Espaço vazio para alinhar com as colunas anteriores -->
+                  </div>
+                  <div style="text-align: center; margin-right: 20px;">
+                    <div style="color: #28a745; font-weight: bold; font-size: 1rem; margin-bottom: 8px;">
+                      Total ENTRADA: {{ formatarMoeda(calcularTotalEntrada()) }}
+                    </div>
+                    <div style="color: #dc3545; font-weight: bold; font-size: 1rem;">
+                      Total SAÍDA: {{ formatarMoeda(calcularTotalSaida()) }}
+                    </div>
+                  </div>
+                  <button class="btn btn-sm" 
+                    [style.background-color]="cfg.btnSalvarBg()"
+                    [style.color]="cfg.btnSalvarText()"
+                    title="Exportar para Excel"
+                    (click)="exportarParaExcel()">
+                    📊 Exportar para Excel
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-content-end align-items-center p-3 border-top gap-3">
+        <span class="text-muted">{{ dadosFiltrados().length }} registro(s) encontrado(s)</span>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="paginaAtual() === 1" (click)="irParaPagina(1)">«</button>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="paginaAtual() === 1" (click)="irParaPagina(paginaAtual() - 1)">‹ Anterior</button>
+        <span>{{ paginaAtual() }} / {{ totalPaginas() }}</span>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="paginaAtual() === totalPaginas()" (click)="irParaPagina(paginaAtual() + 1)">Próxima ›</button>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="paginaAtual() === totalPaginas()" (click)="irParaPagina(totalPaginas())">»</button>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Modal -->
+@if (modalAberto()) {
+  <div class="modal-backdrop show"></div>
+  <div class="modal d-block" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content shadow-lg border-0">
+
+        <div class="modal-header text-white"
+          [style.background-color]="modalAcao() === 'excluir' ? cfg.btnExcluirBg() : cfg.btnSalvarBg()"
+          [style.color]="modalAcao() === 'excluir' ? cfg.btnExcluirText() : cfg.btnSalvarText()">
+          <h5 class="modal-title">{{ modalTitulo() }}</h5>
+          <button type="button" class="btn-close btn-close-white" (click)="fecharModal()"></button>
+        </div>
+
+        <div class="modal-body">
+          @if (modalAcao() === 'excluir') {
+            <p class="mb-3 fw-bold" [style.color]="cfg.btnExcluirBg()">
+              Tem certeza que deseja excluir <strong>{{ formNome() }}</strong>?
+            </p>
+          }
+          @if (erro()) {
+            <div class="alert alert-danger py-2 mb-3" role="alert">{{ erro() }}</div>
+          }
+          <form>
+            <div class="row">
+              @if (modalAcao() !== 'inserir') {
+                <div class="col-12 mb-3">
+                  <label class="form-label">ID</label>
+                  <input type="text" class="form-control" [value]="formId()" readOnly />
+                </div>
+              }
+              <div class="col-12 mb-3">
+                <label class="form-label">Nome</label>
+                <input type="text" class="form-control" placeholder="Digite o nome"
+                  [value]="formNome()"
+                  (input)="formNome.set($any($event.target).value)"
+                  [readOnly]="somenteLeitura()" />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Valor</label>
+                <input type="number" class="form-control" placeholder="0.00" step="0.01"
+                  [value]="formValor()"
+                  (input)="formValor.set($any($event.target).value)"
+                  [readOnly]="somenteLeitura()" />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Data Vencimento</label>
+                <input type="date" class="form-control"
+                  [value]="formDataVencimento()"
+                  (input)="formDataVencimento.set($any($event.target).value)"
+                  [readOnly]="somenteLeitura()" />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Data Pagamento</label>
+                <input type="date" class="form-control"
+                  [value]="formDataPagamento()"
+                  (input)="formDataPagamento.set($any($event.target).value)"
+                  [readOnly]="somenteLeitura()" />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Valor Pagamento</label>
+                <input type="number" class="form-control" placeholder="0.00" step="0.01"
+                  [value]="formValorPagamento()"
+                  (input)="formValorPagamento.set($any($event.target).value)"
+                  [readOnly]="somenteLeitura()" />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Status Pagamento</label>
+                <input type="text" class="form-control" 
+                  [value]="obterStatusPagamento()"
+                  readOnly />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Juros por Atraso</label>
+                <input type="number" class="form-control" placeholder="0.00" step="0.01"
+                  [value]="formJurosPorAtraso()"
+                  (input)="formJurosPorAtraso.set($any($event.target).value)"
+                  [readOnly]="somenteLeitura()" />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Tipo Despesa</label>
+                @if (somenteLeitura()) {
+                  <input type="text" class="form-control" [value]="obterNomeTipoDespesaSelecionado()" readOnly />
+                } @else {
+                  <select class="form-control"
+                    [value]="formTipoDespesaId()"
+                    (change)="formTipoDespesaId.set(parseIntValue($any($event.target).value))">
+                    <option [value]="null">Selecione...</option>
+                    @for (despesa of despesas(); track despesa.id) {
+                      <option [value]="despesa.id" [selected]="formTipoDespesaId() === despesa.id">{{ despesa.nome }}</option>
+                    }
+                  </select>
+                  @if (formTipoDespesaId()) {
+                    <small class="text-muted d-block mt-1">Selecionado: {{ obterNomeTipoDespesaSelecionado() }}</small>
+                  }
+                }
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Tipo de Gasto</label>
+                @if (somenteLeitura()) {
+                  <input type="text" class="form-control" [value]="obterNomeTipoGastoSelecionado()" readOnly />
+                } @else {
+                  <select class="form-control"
+                    [value]="formTipoGastoId()"
+                    (change)="formTipoGastoId.set(parseIntValue($any($event.target).value))">
+                    <option [value]="null">Selecione...</option>
+                    @for (tipoGasto of tipoGastos(); track tipoGasto.id) {
+                      <option [value]="tipoGasto.id" [selected]="formTipoGastoId() === tipoGasto.id">{{ tipoGasto.nome }}</option>
+                    }
+                  </select>
+                  @if (formTipoGastoId()) {
+                    <small class="text-muted d-block mt-1">Selecionado: {{ obterNomeTipoGastoSelecionado() }}</small>
+                  }
+                }
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Tipo Lançamento</label>
+                @if (somenteLeitura()) {
+                  <input type="text" class="form-control" [value]="obterNomeTipoLancamentoSelecionado()" readOnly />
+                } @else {
+                  <select class="form-control"
+                    [value]="formTipoLancamento()"
+                    (change)="formTipoLancamento.set(parseIntValue($any($event.target).value))">
+                    <option [value]="null">Selecione...</option>
+                    <option [value]="1" [selected]="formTipoLancamento() === 1">ENTRADA</option>
+                    <option [value]="2" [selected]="formTipoLancamento() === 2">SAÍDA</option>
+                  </select>
+                  @if (formTipoLancamento()) {
+                    <small class="text-muted d-block mt-1">Selecionado: {{ obterNomeTipoLancamentoSelecionado() }}</small>
+                  }
+                }
+              </div>
+              <div class="col-12 mb-3">
+                <label class="form-check-label">
+                  <input type="checkbox" class="form-check-input"
+                    [checked]="formStatusAtraso()"
+                    (change)="formStatusAtraso.set($any($event.target).checked)"
+                    [disabled]="somenteLeitura()" />
+                  Status Atraso
+                </label>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer border-0">
+          <button class="btn"
+            [style.background-color]="cfg.btnCancelarBg()"
+            [style.color]="cfg.btnCancelarText()"
+            (click)="fecharModal()">Cancelar</button>
+
+          @if (modalAcao() !== 'visualizar') {
+            @if (modalAcao() === 'excluir') {
+              <button class="btn"
+                [style.background-color]="cfg.btnExcluirBg()"
+                [style.color]="cfg.btnExcluirText()"
+                (click)="confirmarModal()">🗑️ Excluir</button>
+            } @else if (modalAcao() === 'inserir') {
+              <button class="btn"
+                [style.background-color]="cfg.btnSalvarBg()"
+                [style.color]="cfg.btnSalvarText()"
+                (click)="confirmarModal()">💾 Salvar</button>
+            } @else {
+              <button class="btn"
+                [style.background-color]="cfg.btnAlterarBg()"
+                [style.color]="cfg.btnAlterarText()"
+                (click)="confirmarModal()">✏️ Atualizar</button>
+            }
+          }
+        </div>
+
+      </div>
+    </div>
+  </div>
+}
