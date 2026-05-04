@@ -20,6 +20,8 @@ import { TipoGastoPort } from './core/ports/tipo-gasto.port';
 import { TipoGastoRepository } from './data/repositories/tipo-gasto.repository';
 import { UsuarioPort } from './core/ports/usuario.port';
 import { UsuarioRepository } from './data/repositories/usuario.repository';
+import { ReservaPort } from './core/ports/reserva.port';
+import { ReservaRepository } from './data/repositories/reserva.repository';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -35,5 +37,6 @@ export const appConfig: ApplicationConfig = {
     { provide: MenuPort,       useClass: MenuRepository },
     { provide: TipoGastoPort,  useClass: TipoGastoRepository },
     { provide: UsuarioPort,    useClass: UsuarioRepository },
+    { provide: ReservaPort,    useClass: ReservaRepository },
   ],
 };

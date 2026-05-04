@@ -1,0 +1,253 @@
+<div class="card shadow-sm w-100">
+  <app-page-title titulo="Agendamento" />
+  <div class="card-body p-3">
+
+    @if (erro() && !modalAberto()) {
+      <div class="alert alert-danger" role="alert">{{ erro() }}</div>
+    }
+
+    <!-- ── Calendário ──────────────────────────────────────────────────── -->
+    <div class="calendario-card mb-4">
+
+      <!-- Cabeçalho do mês -->
+      <div class="cal-header">
+        <button class="btn btn-sm cal-nav" (click)="mesAnterior()">‹</button>
+        <span class="cal-titulo">{{ tituloMes() }}</span>
+        <button class="btn btn-sm cal-nav" (click)="proximoMes()">›</button>
+      </div>
+
+      <!-- Dias da semana -->
+      <div class="cal-grid">
+        @for (ds of DIAS_SEMANA; track ds) {
+          <div class="cal-dia-semana">{{ ds }}</div>
+        }
+
+        <!-- Células dos dias -->
+        @for (dia of diasCalendario(); track dia.data.toISOString()) {
+          <div class="cal-dia"
+            [class.cal-outro-mes]="!dia.mesAtual"
+            [class.cal-hoje]="dia.diaAtual"
+            [class.cal-selecionado]="dia.selecionado"
+            [class.cal-tem-reserva]="dia.temReserva"
+            (click)="selecionarDia(dia)">
+            <span class="cal-numero">{{ dia.data.getDate() }}</span>
+            @if (dia.temReserva) {
+              <span class="cal-badge">{{ dia.qtdReservas }}</span>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Legenda -->
+      <div class="cal-legenda">
+        <span class="leg-item"><span class="leg-dot leg-hoje"></span> Hoje</span>
+        <span class="leg-item"><span class="leg-dot leg-reserva"></span> Com reservas</span>
+        <span class="leg-item"><span class="leg-dot leg-sel"></span> Selecionado</span>
+        @if (diaSelecionado()) {
+          <button class="btn btn-sm btn-link ms-auto p-0" (click)="diaSelecionado.set(null)">
+            ✕ Limpar filtro
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- ── Tabela de reservas ──────────────────────────────────────────── -->
+    <div class="d-flex align-items-center justify-content-between mb-2">
+      <h6 class="mb-0 fw-semibold">{{ labelDiaSelecionado() }}</h6>
+      <app-crud-buttons
+        [mostrarInserir]="true"
+        [mostrarVisualizar]="false"
+        [mostrarAlterar]="false"
+        [mostrarExcluir]="false"
+        (inserir)="onInserir()" />
+    </div>
+
+    @if (loading()) {
+      <div class="text-center p-4">
+        <span class="spinner-border" role="status"></span>
+        <p class="mt-2 text-muted">Carregando...</p>
+      </div>
+    } @else {
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <thead>
+            <tr>
+              @for (col of colunas; track col) {
+                <th class="th-sort" (click)="ordenarPor(col)">
+                  {{ col }} <span class="sort-icon">{{ iconeSort(col) }}</span>
+                </th>
+              }
+              <th class="text-center col-acao">Ação</th>
+            </tr>
+            <tr>
+              @for (col of colunas; track col) {
+                <th>
+                  <input type="text" class="form-control form-control-sm filtro-input"
+                    placeholder="Filtrar..."
+                    [value]="filtros()[col] ?? ''"
+                    (input)="onFiltroChange(col, $any($event.target).value)" />
+                </th>
+              }
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of dadosPaginados(); track item.id) {
+              <tr>
+                @for (col of colunas; track col) {
+                  <td>{{ formatarCelula(item, col) }}</td>
+                }
+                <td class="text-center text-nowrap">
+                  <app-crud-buttons
+                    (visualizar)="onVisualizar(item)"
+                    (alterar)="onAlterar(item)"
+                    (excluir)="onExcluir(item)" />
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td [attr.colspan]="colunas.length + 1" class="text-center text-muted p-3">
+                  Nenhuma reserva encontrada.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-content-end align-items-center p-3 border-top gap-3">
+        <span class="text-muted">{{ dadosFiltrados().length }} registro(s)</span>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="paginaAtual() === 1" (click)="irParaPagina(1)">«</button>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="paginaAtual() === 1" (click)="irParaPagina(paginaAtual() - 1)">‹</button>
+        <span>{{ paginaAtual() }} / {{ totalPaginas() }}</span>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="paginaAtual() === totalPaginas()" (click)="irParaPagina(paginaAtual() + 1)">›</button>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="paginaAtual() === totalPaginas()" (click)="irParaPagina(totalPaginas())">»</button>
+      </div>
+    }
+
+  </div>
+</div>
+
+<!-- ── Modal ──────────────────────────────────────────────────────────────── -->
+@if (modalAberto()) {
+  <div class="modal-backdrop show"></div>
+  <div class="modal d-block" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content shadow-lg border-0">
+
+        <div class="modal-header text-white"
+          [style.background-color]="modalAcao() === 'excluir' ? cfg.btnExcluirBg() : cfg.btnSalvarBg()"
+          [style.color]="modalAcao() === 'excluir' ? cfg.btnExcluirText() : cfg.btnSalvarText()">
+          <h5 class="modal-title">{{ modalTitulo() }}</h5>
+          <button type="button" class="btn-close btn-close-white" (click)="fecharModal()"></button>
+        </div>
+
+        <div class="modal-body">
+          @if (modalAcao() === 'excluir') {
+            <p class="mb-3 fw-bold" [style.color]="cfg.btnExcluirBg()">
+              Tem certeza que deseja excluir a reserva de <strong>{{ formResponsavel() }}</strong>?
+            </p>
+          }
+          @if (erro()) {
+            <div class="alert alert-danger py-2 mb-3" role="alert">{{ erro() }}</div>
+          }
+          @if (modalAcao() !== 'excluir') {
+            <form>
+              <div class="row">
+                @if (modalAcao() !== 'inserir') {
+                  <div class="col-md-2 mb-3">
+                    <label class="form-label">ID</label>
+                    <input type="text" class="form-control" [value]="formId()" readOnly />
+                  </div>
+                }
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Responsável <span class="text-danger">*</span></label>
+                  @if (somenteLeitura()) {
+                    <!-- Visualizar: mostra o nome salvo -->
+                    <input type="text" class="form-control"
+                      [value]="formResponsavel()"
+                      readOnly />
+                  } @else {
+                    <!-- Inserir/Alterar: dropdown de moradores -->
+                    <select class="form-select"
+                      [value]="formPessoaId()"
+                      (change)="onPessoaChange($any($event.target).value)">
+                      <option value="">— Selecione o morador —</option>
+                      @for (pessoa of pessoas(); track pessoa.id) {
+                        <option [value]="pessoa.id" [selected]="pessoa.id === formPessoaId()">
+                          {{ pessoa.nomeCompleto }}
+                        </option>
+                      }
+                    </select>
+                  }
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label class="form-label">Data <span class="text-danger">*</span></label>
+                  <input type="date" class="form-control"
+                    [value]="formData()"
+                    (input)="formData.set($any($event.target).value)"
+                    [readOnly]="somenteLeitura()" />
+                </div>
+                <div class="col-md-3 mb-3">
+                  <label class="form-label">Hora Início <span class="text-danger">*</span></label>
+                  <input type="time" class="form-control"
+                    [value]="formHoraInicio()"
+                    (input)="formHoraInicio.set($any($event.target).value)"
+                    [readOnly]="somenteLeitura()" />
+                </div>
+                <div class="col-md-3 mb-3">
+                  <label class="form-label">Hora Final <span class="text-danger">*</span></label>
+                  <input type="time" class="form-control"
+                    [value]="formHoraFinal()"
+                    (input)="formHoraFinal.set($any($event.target).value)"
+                    [readOnly]="somenteLeitura()" />
+                </div>
+                <div class="col-md-3 mb-3">
+                  <label class="form-label">Valor (R$) <span class="text-danger">*</span></label>
+                  <input type="number" class="form-control" placeholder="0,00" step="0.01" min="0"
+                    [value]="formValor()"
+                    (input)="formValor.set($any($event.target).value)"
+                    [readOnly]="somenteLeitura()" />
+                </div>
+                <div class="col-12 mb-3">
+                  <label class="form-label">Descrição</label>
+                  <textarea class="form-control" rows="3" placeholder="Observações (opcional)"
+                    [value]="formDescricao()"
+                    (input)="formDescricao.set($any($event.target).value)"
+                    [readOnly]="somenteLeitura()"></textarea>
+                </div>
+              </div>
+            </form>
+          }
+        </div>
+
+        <div class="modal-footer border-0">
+          <button class="btn"
+            [style.background-color]="cfg.btnCancelarBg()"
+            [style.color]="cfg.btnCancelarText()"
+            (click)="fecharModal()">Cancelar</button>
+
+          @if (modalAcao() !== 'visualizar') {
+            @if (modalAcao() === 'excluir') {
+              <button class="btn"
+                [style.background-color]="cfg.btnExcluirBg()"
+                [style.color]="cfg.btnExcluirText()"
+                (click)="confirmarModal()">🗑️ Excluir</button>
+            } @else if (modalAcao() === 'inserir') {
+              <button class="btn"
+                [style.background-color]="cfg.btnSalvarBg()"
+                [style.color]="cfg.btnSalvarText()"
+                (click)="confirmarModal()">💾 Salvar</button>
+            } @else {
+              <button class="btn"
+                [style.background-color]="cfg.btnAlterarBg()"
+                [style.color]="cfg.btnAlterarText()"
+                (click)="confirmarModal()">✏️ Atualizar</button>
+            }
+          }
+        </div>
+
+      </div>
+    </div>
+  </div>
+}

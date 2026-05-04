@@ -1,0 +1,234 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+/* ── Calendário ──────────────────────────────────────────────────────────── */
+.calendario-card {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #4472c4;
+  color: #fff;
+  padding: 0.6rem 1rem;
+}
+
+.cal-titulo {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.cal-nav {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: #fff;
+  font-size: 1.1rem;
+  padding: 2px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cal-nav:hover {
+  background: rgba(255,255,255,0.35);
+}
+
+/* Grade 7 colunas */
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background-color: #dee2e6;
+  border-top: 1px solid #dee2e6;
+}
+
+.cal-dia-semana {
+  background: #d9e2f3;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #3a63a8;
+  padding: 4px 0;
+}
+
+.cal-dia {
+  background: #fff;
+  min-height: 52px;
+  padding: 4px 6px;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transition: background-color 0.1s;
+}
+
+.cal-dia:hover {
+  background-color: #e8f0fe;
+}
+
+.cal-numero {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #212529;
+}
+
+.cal-outro-mes .cal-numero {
+  color: #adb5bd;
+}
+
+.cal-hoje {
+  background-color: #fff3cd !important;
+}
+
+.cal-hoje .cal-numero {
+  font-weight: 700;
+  color: #856404;
+}
+
+.cal-selecionado {
+  background-color: #4472c4 !important;
+}
+
+.cal-selecionado .cal-numero {
+  color: #fff !important;
+  font-weight: 700;
+}
+
+.cal-selecionado .cal-badge {
+  background: rgba(255,255,255,0.3) !important;
+  color: #fff !important;
+}
+
+.cal-tem-reserva .cal-numero {
+  color: #0d6efd;
+}
+
+.cal-badge {
+  font-size: 0.65rem;
+  background: #0d6efd;
+  color: #fff;
+  border-radius: 10px;
+  padding: 0 5px;
+  margin-top: 2px;
+  font-weight: 600;
+}
+
+/* Legenda */
+.cal-legenda {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 6px 12px;
+  background: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+  font-size: 0.78rem;
+  color: #6c757d;
+}
+
+.leg-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.leg-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.leg-hoje    { background: #fff3cd; border: 1px solid #856404; }
+.leg-reserva { background: #cfe2ff; border: 1px solid #0d6efd; }
+.leg-sel     { background: #4472c4; }
+
+/* ── Tabela ──────────────────────────────────────────────────────────────── */
+.table {
+  border-collapse: collapse;
+  font-family: Calibri, "Segoe UI", Arial, sans-serif;
+  font-size: 0.875rem;
+  width: 100%;
+}
+
+.table th,
+.table td {
+  border: 1px solid #d4d4d4;
+  padding: 4px 8px;
+  vertical-align: middle;
+}
+
+.table thead tr:first-child th {
+  background-color: #4472c4;
+  color: #fff;
+  font-weight: 600;
+  text-align: left;
+  border-color: #3a63a8;
+  white-space: nowrap;
+}
+
+.table thead tr:nth-child(2) th {
+  background-color: #d9e2f3;
+  padding: 2px 4px;
+  border-color: #b4c6e7;
+}
+
+.table tbody tr:nth-child(odd)  { background-color: #ffffff; }
+.table tbody tr:nth-child(even) { background-color: #d9e2f3; }
+.table tbody tr:hover           { background-color: #b4c6e7; }
+
+.th-sort {
+  cursor: pointer;
+  user-select: none;
+}
+
+.th-sort:hover { background-color: #3a63a8 !important; }
+
+.sort-icon { font-size: 0.7rem; opacity: 0.7; }
+
+.filtro-input {
+  font-size: 0.8rem;
+  border: 1px solid #b4c6e7;
+  border-radius: 0;
+  padding: 2px 6px;
+  background-color: #fff;
+  width: 100%;
+}
+
+.filtro-input:focus {
+  border-color: #4472c4;
+  box-shadow: none;
+  outline: none;
+}
+
+.col-acao {
+  width: 160px;
+  min-width: 160px;
+}
+
+/* ── Modal ───────────────────────────────────────────────────────────────── */
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 9998;
+}
+
+.modal.d-block {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  z-index: 9999;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  background: transparent;
+}

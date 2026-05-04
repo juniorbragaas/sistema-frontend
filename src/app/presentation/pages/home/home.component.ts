@@ -2,8 +2,18 @@ import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ListarPessoasUseCase } from '../../../core/usecases/listar-pessoas.usecase';
 import { ListarConvidadosUseCase } from '../../../core/usecases/listar-convidados.usecase';
+import { ListarReservasUseCase } from '../../../core/usecases/listar-reservas.usecase';
 import { PessoaApi } from '../../../core/models/pessoa-api.model';
 import { Convidado } from '../../../core/models/convidado.model';
+import { Reserva } from '../../../core/models/reserva.model';
+
+interface DiaCalendario {
+  data: Date;
+  mesAtual: boolean;
+  diaAtual: boolean;
+  temReserva: boolean;
+  qtdReservas: number;
+}
 
 @Component({
   selector: 'app-home',
@@ -15,6 +25,7 @@ import { Convidado } from '../../../core/models/convidado.model';
 export class HomeComponent implements OnInit {
   private listarPessoasUseCase = inject(ListarPessoasUseCase);
   private listarConvidadosUseCase = inject(ListarConvidadosUseCase);
+  private listarReservasUseCase = inject(ListarReservasUseCase);
 
   pessoas = signal<PessoaApi[]>([]);
   convidados = signal<Convidado[]>([]);

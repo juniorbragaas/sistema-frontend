@@ -14,7 +14,9 @@
           <thead>
             <tr>
               @for (col of colunas; track col.key) {
-                <th>{{ col.label }}</th>
+                <th class="th-sort" (click)="ordenarPor(col.key)">
+                  {{ col.label }} <span class="sort-icon">{{ iconeSort(col.key) }}</span>
+                </th>
               }
               <th class="text-center col-acao">
                 Ação
@@ -52,7 +54,11 @@
                   </td>
                 }
                 <td class="text-center text-nowrap">
-                  <app-crud-buttons (visualizar)="onVisualizar(item)" (alterar)="onAlterar(item)" (excluir)="onExcluir(item)" />
+                  <app-crud-buttons
+                    (visualizar)="onVisualizar(item)"
+                    (alterar)="onAlterar(item)"
+                    [mostrarExcluir]="!isPessoaProtegida(item)"
+                    (excluir)="onExcluir(item)" />
                 </td>
               </tr>
             } @empty {

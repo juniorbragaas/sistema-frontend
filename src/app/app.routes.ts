@@ -112,6 +112,16 @@ export const routes: Routes = [
         ]},
       },
       {
+        path: 'agendamento',
+        loadComponent: () =>
+          import('./presentation/pages/agendamento/agendamento.component').then(m => m.AgendamentoComponent),
+        data: { breadcrumbs: [
+          { label: 'Home', url: '/home' },
+          { label: 'Reservas' },
+          { label: 'Agendamento', url: '/agendamento' },
+        ]},
+      },
+      {
         path: '',
         redirectTo: 'home',
         pathMatch: 'full',

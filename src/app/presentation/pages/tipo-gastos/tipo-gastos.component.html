@@ -14,7 +14,9 @@
           <thead>
             <tr>
               @for (col of colunas(); track col) {
-                <th>{{ col }}</th>
+                <th class="th-sort" (click)="ordenarPor(col)">
+                  {{ col }} <span class="sort-icon">{{ iconeSort(col) }}</span>
+                </th>
               }
               <th class="text-center col-acao">
                 Ação

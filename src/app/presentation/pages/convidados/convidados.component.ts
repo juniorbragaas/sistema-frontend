@@ -26,6 +26,8 @@ export class ConvidadosComponent implements OnInit {
   loading = signal(false);
   erro = signal('');
   filtros = signal<Record<string, string>>({});
+  sortColuna  = signal('');
+  sortDirecao = signal<'asc' | 'desc'>('asc');
   paginaAtual = signal(1);
   itensPorPagina = signal(10);
 
@@ -74,14 +76,22 @@ export class ConvidadosComponent implements OnInit {
   dadosFiltrados = computed(() => {
     const dados = this.convidados();
     const f = this.filtros();
-    return dados.filter(item =>
-      Object.keys(f).every(col => {
-        const filtro = f[col]?.toLowerCase() ?? '';
+    const col = this.sortColuna();
+    const dir = this.sortDirecao();
+    const filtrados = dados.filter(item =>
+      Object.keys(f).every(c => {
+        const filtro = f[c]?.toLowerCase() ?? '';
         if (!filtro) return true;
-        const valor = String(this.getValor(item, col)).toLowerCase();
+        const valor = String(this.getValor(item, c)).toLowerCase();
         return valor.includes(filtro);
       })
     );
+    if (!col) return filtrados;
+    return [...filtrados].sort((a, b) => {
+      const va = String(this.getValor(a, col)).toLowerCase();
+      const vb = String(this.getValor(b, col)).toLowerCase();
+      return dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+    });
   });
 
   dadosPaginados = computed(() => {
@@ -135,6 +145,21 @@ export class ConvidadosComponent implements OnInit {
   onFiltroChange(coluna: string, valor: string): void {
     this.filtros.update(f => ({ ...f, [coluna]: valor }));
     this.paginaAtual.set(1);
+  }
+
+  ordenarPor(coluna: string): void {
+    if (this.sortColuna() === coluna) {
+      this.sortDirecao.update(d => d === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortColuna.set(coluna);
+      this.sortDirecao.set('asc');
+    }
+    this.paginaAtual.set(1);
+  }
+
+  iconeSort(coluna: string): string {
+    if (this.sortColuna() !== coluna) return '↕';
+    return this.sortDirecao() === 'asc' ? '▲' : '▼';
   }
 
   irParaPagina(pagina: number): void {

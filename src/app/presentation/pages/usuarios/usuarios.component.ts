@@ -34,6 +34,8 @@ export class UsuariosComponent implements OnInit {
   erro         = signal('');
   colunas      = signal<string[]>(['id', 'nome', 'email', 'dataCriacao']);
   filtros      = signal<Record<string, string>>({});
+  sortColuna   = signal('');
+  sortDirecao  = signal<'asc' | 'desc'>('asc');
   paginaAtual  = signal(1);
   itensPorPagina = signal(10);
 
@@ -66,13 +68,21 @@ export class UsuariosComponent implements OnInit {
   dadosFiltrados = computed(() => {
     const dados = this.usuarios();
     const f = this.filtros();
-    return dados.filter(item =>
-      Object.keys(f).every(col => {
-        const filtro = f[col]?.toLowerCase() ?? '';
+    const col = this.sortColuna();
+    const dir = this.sortDirecao();
+    const filtrados = dados.filter(item =>
+      Object.keys(f).every(c => {
+        const filtro = f[c]?.toLowerCase() ?? '';
         if (!filtro) return true;
-        return String(item[col] ?? '').toLowerCase().includes(filtro);
+        return String(item[c] ?? '').toLowerCase().includes(filtro);
       })
     );
+    if (!col) return filtrados;
+    return [...filtrados].sort((a, b) => {
+      const va = String(a[col] ?? '').toLowerCase();
+      const vb = String(b[col] ?? '').toLowerCase();
+      return dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+    });
   });
 
   dadosPaginados = computed(() => {
@@ -121,6 +131,21 @@ export class UsuariosComponent implements OnInit {
     this.paginaAtual.set(1);
   }
 
+  ordenarPor(coluna: string): void {
+    if (this.sortColuna() === coluna) {
+      this.sortDirecao.update(d => d === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortColuna.set(coluna);
+      this.sortDirecao.set('asc');
+    }
+    this.paginaAtual.set(1);
+  }
+
+  iconeSort(coluna: string): string {
+    if (this.sortColuna() !== coluna) return '↕';
+    return this.sortDirecao() === 'asc' ? '▲' : '▼';
+  }
+
   irParaPagina(pagina: number): void {
     if (pagina >= 1 && pagina <= this.totalPaginas()) this.paginaAtual.set(pagina);
   }
@@ -155,7 +180,20 @@ export class UsuariosComponent implements OnInit {
     this.modalAberto.set(true);
   }
 
+  /** Registros protegidos que não podem ser excluídos */
+  private readonly NOMES_PROTEGIDOS_USUARIO = ['admin'];
+
+  isUsuarioProtegido(item: Usuario): boolean {
+    return this.NOMES_PROTEGIDOS_USUARIO.includes(
+      (item.nome ?? '').toLowerCase().trim()
+    );
+  }
+
   onExcluir(item: Usuario): void {
+    if (this.isUsuarioProtegido(item)) {
+      this.erro.set('O usuário "admin" é protegido e não pode ser excluído.');
+      return;
+    }
     this.itemSelecionado.set(item);
     this.preencherForm(item);
     this.modalAcao.set('excluir');

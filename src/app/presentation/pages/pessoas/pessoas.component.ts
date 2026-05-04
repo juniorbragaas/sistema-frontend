@@ -25,6 +25,8 @@ export class PessoasComponent implements OnInit {
   loading = signal(false);
   erro = signal('');
   filtros = signal<Record<string, string>>({});
+  sortColuna  = signal('');
+  sortDirecao = signal<'asc' | 'desc'>('asc');
   paginaAtual = signal(1);
   itensPorPagina = signal(10);
 
@@ -64,14 +66,22 @@ export class PessoasComponent implements OnInit {
   dadosFiltrados = computed(() => {
     const dados = this.pessoas();
     const f = this.filtros();
-    return dados.filter(item =>
-      Object.keys(f).every(col => {
-        const filtro = f[col]?.toLowerCase() ?? '';
+    const col = this.sortColuna();
+    const dir = this.sortDirecao();
+    const filtrados = dados.filter(item =>
+      Object.keys(f).every(c => {
+        const filtro = f[c]?.toLowerCase() ?? '';
         if (!filtro) return true;
-        const valor = String(item[col] ?? '').toLowerCase();
+        const valor = String(item[c] ?? '').toLowerCase();
         return valor.includes(filtro);
       })
     );
+    if (!col) return filtrados;
+    return [...filtrados].sort((a, b) => {
+      const va = String(a[col] ?? '').toLowerCase();
+      const vb = String(b[col] ?? '').toLowerCase();
+      return dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+    });
   });
 
   dadosPaginados = computed(() => {
@@ -129,6 +139,21 @@ export class PessoasComponent implements OnInit {
     this.paginaAtual.set(1);
   }
 
+  ordenarPor(coluna: string): void {
+    if (this.sortColuna() === coluna) {
+      this.sortDirecao.update(d => d === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortColuna.set(coluna);
+      this.sortDirecao.set('asc');
+    }
+    this.paginaAtual.set(1);
+  }
+
+  iconeSort(coluna: string): string {
+    if (this.sortColuna() !== coluna) return '↕';
+    return this.sortDirecao() === 'asc' ? '▲' : '▼';
+  }
+
   irParaPagina(pagina: number): void {
     if (pagina >= 1 && pagina <= this.totalPaginas()) {
       this.paginaAtual.set(pagina);
@@ -156,7 +181,20 @@ export class PessoasComponent implements OnInit {
     this.modalAberto.set(true);
   }
 
+  /** Registros protegidos que não podem ser excluídos */
+  private readonly NOMES_PROTEGIDOS_PESSOA = ['administrador'];
+
+  isPessoaProtegida(item: PessoaApi): boolean {
+    return this.NOMES_PROTEGIDOS_PESSOA.includes(
+      (item.nomeCompleto ?? '').toLowerCase().trim()
+    );
+  }
+
   onExcluir(item: PessoaApi): void {
+    if (this.isPessoaProtegida(item)) {
+      this.erro.set('O registro "Administrador" é protegido e não pode ser excluído.');
+      return;
+    }
     this.itemSelecionado.set(item);
     this.formData.set({ ...item } as Record<string, string>);
     this.modalAcao.set('excluir');
