@@ -315,22 +315,54 @@ export class AgendamentoComponent implements OnInit {
     const acao = this.modalAcao();
     const id   = this.formId();
 
+    const horaInicio = this.formHoraInicio();
+    const horaFinal  = this.formHoraFinal();
+    const data       = this.formData();
+
+    // ── Validação local de conflito (feedback imediato) ──────────────────────
+    if ((acao === 'inserir' || acao === 'alterar') && data && horaInicio && horaFinal) {
+      const conflito = this.reservas().find(r => {
+        if (acao === 'alterar' && r.id === id) return false; // ignora a própria reserva
+        if (r.data?.substring(0, 10) !== data) return false;
+        const rIni = r.horaInicio?.substring(0, 5) ?? '';
+        const rFim = r.horaFinal?.substring(0, 5) ?? '';
+        // sobreposição: novaInicio < existenteFinal AND novaFinal > existenteInicio
+        return horaInicio < rFim && horaFinal > rIni;
+      });
+
+      if (conflito) {
+        this.erro.set(
+          `⚠️ Conflito de horário: já existe uma reserva de ` +
+          `${this.formatarHora(conflito.horaInicio)} às ${this.formatarHora(conflito.horaFinal)} ` +
+          `nesta data (${conflito.responsavel}). Escolha outro horário.`
+        );
+        return;
+      }
+    }
+
     const body: Partial<Reserva> = {
       responsavel: this.formResponsavel().trim(),
-      data:        this.formData(),
+      data,
       valor:       parseFloat(this.formValor()) || 0,
-      horaInicio:  this.formHoraInicio() + ':00',
-      horaFinal:   this.formHoraFinal() + ':00',
+      horaInicio:  horaInicio + ':00',
+      horaFinal:   horaFinal  + ':00',
       descricao:   this.formDescricao().trim() || null,
+    };
+
+    // ── Extrai mensagem de erro da API ───────────────────────────────────────
+    const tratarErro = (err: { status?: number; error?: { message?: string } }, acao: string) => {
+      const msg = err?.error?.message;
+      if (err?.status === 409 || err?.status === 400) {
+        this.erro.set(msg ?? `Erro ao ${acao} reserva. Verifique os dados.`);
+      } else {
+        this.erro.set(`Erro ao ${acao} reserva. Tente novamente.`);
+      }
     };
 
     if (acao === 'inserir') {
       this.criarUseCase.execute(body).subscribe({
         next: () => { this.fecharModal(); this.carregarDados(); },
-        error: (err) => {
-          console.error('POST /api/Reservas falhou', err);
-          this.erro.set('Erro ao criar reserva. Verifique os dados.');
-        },
+        error: (err) => tratarErro(err, 'criar'),
       });
       return;
     }
@@ -338,10 +370,7 @@ export class AgendamentoComponent implements OnInit {
     if (acao === 'alterar' && id !== null) {
       this.atualizarUseCase.execute(id, { ...body, id }).subscribe({
         next: () => { this.fecharModal(); this.carregarDados(); },
-        error: (err) => {
-          console.error(`PUT /api/Reservas/${id} falhou`, err);
-          this.erro.set('Erro ao atualizar reserva. Verifique os dados.');
-        },
+        error: (err) => tratarErro(err, 'atualizar'),
       });
       return;
     }
@@ -349,10 +378,7 @@ export class AgendamentoComponent implements OnInit {
     if (acao === 'excluir' && id !== null) {
       this.excluirUseCase.execute(id).subscribe({
         next: () => { this.fecharModal(); this.carregarDados(); },
-        error: (err) => {
-          console.error(`DELETE /api/Reservas/${id} falhou`, err);
-          this.erro.set('Erro ao excluir reserva.');
-        },
+        error: () => this.erro.set('Erro ao excluir reserva.'),
       });
     }
   }

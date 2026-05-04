@@ -24,14 +24,14 @@ export class MenuStateService {
 
   /** Verifica se um nó está expandido */
   isExpandido(id: string): boolean {
-    return this._expandidos()[id] !== false; // expandido por padrão
+    return this._expandidos()[id] === true; // fechado por padrão
   }
 
   setMenus(menus: MenuApi[]): void {
     this._menus.set(menus);
-    // Expande tudo por padrão ao carregar
+    // Todos fechados por padrão ao carregar
     const exp: Record<string, boolean> = {};
-    menus.forEach(m => exp[m.id] = true);
+    menus.forEach(m => exp[m.id] = false);
     this._expandidos.set(exp);
   }
 

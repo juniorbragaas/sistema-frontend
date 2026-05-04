@@ -122,6 +122,16 @@ export const routes: Routes = [
         ]},
       },
       {
+        path: 'logs',
+        loadComponent: () =>
+          import('./presentation/pages/logs/logs.component').then(m => m.LogsComponent),
+        data: { breadcrumbs: [
+          { label: 'Home', url: '/home' },
+          { label: 'Relatórios' },
+          { label: 'Logs', url: '/logs' },
+        ]},
+      },
+      {
         path: '',
         redirectTo: 'home',
         pathMatch: 'full',

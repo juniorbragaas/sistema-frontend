@@ -4,11 +4,12 @@ import { BuscarPessoaCpfUseCase } from '../../../core/usecases/buscar-pessoa-cpf
 import { AtualizarPessoaUseCase } from '../../../core/usecases/atualizar-pessoa.usecase';
 import { PessoaApi } from '../../../core/models/pessoa-api.model';
 import { PageTitleComponent } from '../../shared/page-title/page-title.component';
+import { CpfMaskDirective } from '../../shared/directives/cpf-mask.directive';
 
 @Component({
   selector: 'app-alterar-foto',
   standalone: true,
-  imports: [FormsModule, PageTitleComponent],
+  imports: [FormsModule, PageTitleComponent, CpfMaskDirective],
   templateUrl: './alterar-foto.component.html',
   styleUrl: './alterar-foto.component.css',
 })

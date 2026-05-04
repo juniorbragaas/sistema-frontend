@@ -1,9 +1,13 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ListarDespesasUseCase } from '../../../core/usecases/listar-despesas.usecase';
-import { Despesa } from '../../../core/models/despesa.model';
-import { PageTitleComponent } from '../../shared/page-title/page-title.component';
-import { CrudButtonsComponent } from '../../shared/crud-buttons/crud-buttons.component';
+import { ListarDespesasUseCase }   from '../../../core/usecases/listar-despesas.usecase';
+import { CriarDespesaUseCase }     from '../../../core/usecases/criar-despesa.usecase';
+import { AtualizarDespesaUseCase } from '../../../core/usecases/atualizar-despesa.usecase';
+import { ExcluirDespesaUseCase }   from '../../../core/usecases/excluir-despesa.usecase';
+import { Despesa }                 from '../../../core/models/despesa.model';
+import { AppConfigService }        from '../../../core/services/app-config.service';
+import { PageTitleComponent }      from '../../shared/page-title/page-title.component';
+import { CrudButtonsComponent }    from '../../shared/crud-buttons/crud-buttons.component';
 
 type ModalAcao = 'inserir' | 'visualizar' | 'alterar' | 'excluir' | null;
 
@@ -15,32 +19,36 @@ type ModalAcao = 'inserir' | 'visualizar' | 'alterar' | 'excluir' | null;
   styleUrl: './tipo-despesas.component.css',
 })
 export class TipoDespesasComponent implements OnInit {
-  private listarDespesasUseCase = inject(ListarDespesasUseCase);
+  private listarUseCase    = inject(ListarDespesasUseCase);
+  private criarUseCase     = inject(CriarDespesaUseCase);
+  private atualizarUseCase = inject(AtualizarDespesaUseCase);
+  private excluirUseCase   = inject(ExcluirDespesaUseCase);
+  cfg = inject(AppConfigService);
 
-  despesas = signal<Despesa[]>([]);
-  loading = signal(false);
-  erro = signal('');
-  colunas = signal<string[]>([]);
-  filtros = signal<Record<string, string>>({});
-  sortColuna = signal('');
-  sortDirecao = signal<'asc' | 'desc'>('asc');
-  paginaAtual = signal(1);
+  despesas       = signal<Despesa[]>([]);
+  loading        = signal(false);
+  erro           = signal('');
+  colunas        = signal<string[]>(['id', 'nome']);
+  filtros        = signal<Record<string, string>>({});
+  sortColuna     = signal('');
+  sortDirecao    = signal<'asc' | 'desc'>('asc');
+  paginaAtual    = signal(1);
   itensPorPagina = signal(10);
 
   // Modal
-  modalAberto = signal(false);
-  modalAcao = signal<ModalAcao>(null);
+  modalAberto     = signal(false);
+  modalAcao       = signal<ModalAcao>(null);
   itemSelecionado = signal<Despesa | null>(null);
+  formId   = signal<number | null>(null);
   formNome = signal('');
-  formId = signal<number | null>(null);
 
   modalTitulo = computed(() => {
     switch (this.modalAcao()) {
-      case 'inserir': return 'Inserir Novo Tipo de Despesa';
+      case 'inserir':    return 'Inserir Novo Tipo de Despesa';
       case 'visualizar': return 'Visualizar Tipo de Despesa';
-      case 'alterar': return 'Alterar Tipo de Despesa';
-      case 'excluir': return 'Excluir Tipo de Despesa';
-      default: return '';
+      case 'alterar':    return 'Alterar Tipo de Despesa';
+      case 'excluir':    return 'Excluir Tipo de Despesa';
+      default:           return '';
     }
   });
 
@@ -50,15 +58,14 @@ export class TipoDespesasComponent implements OnInit {
 
   dadosFiltrados = computed(() => {
     const dados = this.despesas();
-    const f = this.filtros();
-    const col = this.sortColuna();
-    const dir = this.sortDirecao();
+    const f     = this.filtros();
+    const col   = this.sortColuna();
+    const dir   = this.sortDirecao();
     const filtrados = dados.filter(item =>
       Object.keys(f).every(c => {
         const filtro = f[c]?.toLowerCase() ?? '';
         if (!filtro) return true;
-        const valor = String(item[c] ?? '').toLowerCase();
-        return valor.includes(filtro);
+        return String(item[c] ?? '').toLowerCase().includes(filtro);
       })
     );
     if (!col) return filtrados;
@@ -79,25 +86,14 @@ export class TipoDespesasComponent implements OnInit {
     Math.ceil(this.dadosFiltrados().length / this.itensPorPagina()) || 1
   );
 
-  ngOnInit(): void {
-    this.carregarDados();
-  }
+  ngOnInit(): void { this.carregarDados(); }
 
   carregarDados(): void {
     this.loading.set(true);
     this.erro.set('');
-    this.listarDespesasUseCase.execute().subscribe({
-      next: (dados) => {
-        this.despesas.set(dados);
-        if (dados.length > 0) {
-          this.colunas.set(['id', 'nome']);
-        }
-        this.loading.set(false);
-      },
-      error: () => {
-        this.erro.set('Erro ao carregar dados.');
-        this.loading.set(false);
-      },
+    this.listarUseCase.execute().subscribe({
+      next: (dados) => { this.despesas.set(dados); this.loading.set(false); },
+      error: () => { this.erro.set('Erro ao carregar dados.'); this.loading.set(false); },
     });
   }
 
@@ -122,9 +118,7 @@ export class TipoDespesasComponent implements OnInit {
   }
 
   irParaPagina(pagina: number): void {
-    if (pagina >= 1 && pagina <= this.totalPaginas()) {
-      this.paginaAtual.set(pagina);
-    }
+    if (pagina >= 1 && pagina <= this.totalPaginas()) this.paginaAtual.set(pagina);
   }
 
   onInserir(): void {
@@ -138,7 +132,7 @@ export class TipoDespesasComponent implements OnInit {
   onVisualizar(item: Despesa): void {
     this.itemSelecionado.set(item);
     this.formId.set(item.id);
-    this.formNome.set(String(item['nome'] ?? ''));
+    this.formNome.set(item.nome);
     this.modalAcao.set('visualizar');
     this.modalAberto.set(true);
   }
@@ -146,7 +140,7 @@ export class TipoDespesasComponent implements OnInit {
   onAlterar(item: Despesa): void {
     this.itemSelecionado.set(item);
     this.formId.set(item.id);
-    this.formNome.set(String(item['nome'] ?? ''));
+    this.formNome.set(item.nome);
     this.modalAcao.set('alterar');
     this.modalAberto.set(true);
   }
@@ -154,7 +148,7 @@ export class TipoDespesasComponent implements OnInit {
   onExcluir(item: Despesa): void {
     this.itemSelecionado.set(item);
     this.formId.set(item.id);
-    this.formNome.set(String(item['nome'] ?? ''));
+    this.formNome.set(item.nome);
     this.modalAcao.set('excluir');
     this.modalAberto.set(true);
   }
@@ -163,16 +157,47 @@ export class TipoDespesasComponent implements OnInit {
     this.modalAberto.set(false);
     this.modalAcao.set(null);
     this.itemSelecionado.set(null);
+    this.erro.set('');
   }
 
   confirmarModal(): void {
     const acao = this.modalAcao();
-    const nome = this.formNome();
-    const item = this.itemSelecionado();
+    const id   = this.formId();
+    const nome = this.formNome().trim();
 
-    console.log(`Ação: ${acao}`, { nome, item });
+    // POST /api/Despesas
+    if (acao === 'inserir') {
+      this.criarUseCase.execute({ nome }).subscribe({
+        next: () => { this.fecharModal(); this.carregarDados(); },
+        error: (err) => {
+          console.error('POST /api/Despesas falhou', err);
+          this.erro.set('Erro ao criar. Verifique os dados.');
+        },
+      });
+      return;
+    }
 
-    // TODO: integrar com use cases de criar/alterar/excluir
-    this.fecharModal();
+    // PUT /api/Despesas/{id}
+    if (acao === 'alterar' && id !== null) {
+      this.atualizarUseCase.execute(id, { id, nome }).subscribe({
+        next: () => { this.fecharModal(); this.carregarDados(); },
+        error: (err) => {
+          console.error(`PUT /api/Despesas/${id} falhou`, err);
+          this.erro.set('Erro ao atualizar. Verifique os dados.');
+        },
+      });
+      return;
+    }
+
+    // DELETE /api/Despesas/{id}
+    if (acao === 'excluir' && id !== null) {
+      this.excluirUseCase.execute(id).subscribe({
+        next: () => { this.fecharModal(); this.carregarDados(); },
+        error: (err) => {
+          console.error(`DELETE /api/Despesas/${id} falhou`, err);
+          this.erro.set('Erro ao excluir. O item pode ter dependências.');
+        },
+      });
+    }
   }
 }

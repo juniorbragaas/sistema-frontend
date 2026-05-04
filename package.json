@@ -26,14 +26,23 @@
     "tslib": "^2.3.0"
   },
   "devDependencies": {
+    "@angular-devkit/build-angular": "^21.2.8",
     "@angular/build": "^21.2.8",
     "@angular/cli": "^21.2.8",
     "@angular/compiler-cli": "^21.2.0",
     "@types/express": "^5.0.1",
+    "@types/jasmine": "^5.1.4",
     "@types/node": "^20.17.19",
+    "jasmine-core": "^5.1.2",
     "jsdom": "^28.0.0",
+    "karma": "^6.4.4",
+    "karma-chrome-launcher": "^3.2.0",
+    "karma-coverage": "^2.2.1",
+    "karma-jasmine": "^5.1.0",
+    "karma-jasmine-html-reporter": "^2.1.0",
     "prettier": "^3.8.1",
     "typescript": "~5.9.2",
-    "vitest": "^4.0.8"
+    "vitest": "^4.0.8",
+    "zone.js": "^0.15.0"
   }
 }

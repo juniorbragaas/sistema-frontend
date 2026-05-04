@@ -6,13 +6,15 @@ import { CriarPessoaUseCase } from '../../../core/usecases/criar-pessoa.usecase'
 import { PessoaApi } from '../../../core/models/pessoa-api.model';
 import { PageTitleComponent } from '../../shared/page-title/page-title.component';
 import { CrudButtonsComponent } from '../../shared/crud-buttons/crud-buttons.component';
+import { CpfMaskDirective } from '../../shared/directives/cpf-mask.directive';
+import { EmailMaskDirective } from '../../shared/directives/email-mask.directive';
 
 type ModalAcao = 'inserir' | 'visualizar' | 'alterar' | 'excluir' | null;
 
 @Component({
   selector: 'app-pessoas',
   standalone: true,
-  imports: [FormsModule, PageTitleComponent, CrudButtonsComponent],
+  imports: [FormsModule, PageTitleComponent, CrudButtonsComponent, CpfMaskDirective, EmailMaskDirective],
   templateUrl: './pessoas.component.html',
   styleUrl: './pessoas.component.css',
 })

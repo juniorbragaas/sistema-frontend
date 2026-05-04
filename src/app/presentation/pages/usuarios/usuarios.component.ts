@@ -11,12 +11,15 @@ import { AppConfigService }       from '../../../core/services/app-config.servic
 import { PageTitleComponent }     from '../../shared/page-title/page-title.component';
 import { CrudButtonsComponent }   from '../../shared/crud-buttons/crud-buttons.component';
 
+import { CpfMaskDirective } from '../../shared/directives/cpf-mask.directive';
+import { EmailMaskDirective } from '../../shared/directives/email-mask.directive';
+
 type ModalAcao = 'inserir' | 'visualizar' | 'alterar' | 'excluir' | 'reset-senha' | null;
 
 @Component({
   selector: 'app-usuarios',
   standalone: true,
-  imports: [FormsModule, PageTitleComponent, CrudButtonsComponent],
+  imports: [FormsModule, PageTitleComponent, CrudButtonsComponent, EmailMaskDirective],
   templateUrl: './usuarios.component.html',
   styleUrl: './usuarios.component.css',
 })

@@ -20,32 +20,37 @@
               }
               <th class="text-center col-acao">
                 Ação
-                <app-crud-buttons [mostrarInserir]="true" [mostrarVisualizar]="false" [mostrarAlterar]="false" [mostrarExcluir]="false" (inserir)="onInserir()" />
+                <app-crud-buttons
+                  [mostrarInserir]="true"
+                  [mostrarVisualizar]="false"
+                  [mostrarAlterar]="false"
+                  [mostrarExcluir]="false"
+                  (inserir)="onInserir()" />
               </th>
             </tr>
             <tr>
               @for (col of colunas(); track col) {
                 <th>
-                  <input
-                    type="text"
-                    class="form-control form-control-sm filtro-input"
+                  <input type="text" class="form-control form-control-sm filtro-input"
                     placeholder="Filtrar..."
                     [value]="filtros()[col] ?? ''"
-                    (input)="onFiltroChange(col, $any($event.target).value)"
-                  />
+                    (input)="onFiltroChange(col, $any($event.target).value)" />
                 </th>
               }
               <th></th>
             </tr>
           </thead>
           <tbody>
-            @for (item of dadosPaginados(); track item['id'] ?? $index) {
+            @for (item of dadosPaginados(); track item.id) {
               <tr>
                 @for (col of colunas(); track col) {
                   <td>{{ item[col] }}</td>
                 }
                 <td class="text-center text-nowrap">
-                  <app-crud-buttons (visualizar)="onVisualizar(item)" (alterar)="onAlterar(item)" (excluir)="onExcluir(item)" />
+                  <app-crud-buttons
+                    (visualizar)="onVisualizar(item)"
+                    (alterar)="onAlterar(item)"
+                    (excluir)="onExcluir(item)" />
                 </td>
               </tr>
             } @empty {
@@ -77,17 +82,22 @@
   <div class="modal d-block" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content shadow-lg border-0">
-        <!-- Header -->
+
         <div class="modal-header text-white"
-          [class.bg-primary]="modalAcao() !== 'excluir'"
-          [class.bg-danger]="modalAcao() === 'excluir'">
+          [style.background-color]="modalAcao() === 'excluir' ? cfg.btnExcluirBg() : cfg.btnSalvarBg()"
+          [style.color]="modalAcao() === 'excluir' ? cfg.btnExcluirText() : cfg.btnSalvarText()">
           <h5 class="modal-title">{{ modalTitulo() }}</h5>
           <button type="button" class="btn-close btn-close-white" (click)="fecharModal()"></button>
         </div>
-        <!-- Body -->
+
         <div class="modal-body">
           @if (modalAcao() === 'excluir') {
-            <p class="mb-3 text-danger fw-bold">Tem certeza que deseja excluir o registro?</p>
+            <p class="mb-3 fw-bold" [style.color]="cfg.btnExcluirBg()">
+              Tem certeza que deseja excluir <strong>{{ formNome() }}</strong>?
+            </p>
+          }
+          @if (erro()) {
+            <div class="alert alert-danger py-2 mb-3" role="alert">{{ erro() }}</div>
           }
           <form>
             <div class="row">
@@ -98,33 +108,42 @@
                 </div>
               }
               <div class="col-12 mb-3">
-                <label class="form-label">Nome : </label>
-                <input
-                  type="text"
-                  class="form-control"
-                  placeholder="Digite o nome"
+                <label class="form-label">Nome</label>
+                <input type="text" class="form-control" placeholder="Digite o nome"
                   [value]="formNome()"
                   (input)="formNome.set($any($event.target).value)"
-                  [readOnly]="somenteLeitura()"
-                />
+                  [readOnly]="somenteLeitura()" />
               </div>
             </div>
           </form>
         </div>
-        <!-- Footer -->
+
         <div class="modal-footer border-0">
-          <button class="btn btn-outline-secondary" (click)="fecharModal()">Cancelar</button>
+          <button class="btn"
+            [style.background-color]="cfg.btnCancelarBg()"
+            [style.color]="cfg.btnCancelarText()"
+            (click)="fecharModal()">Cancelar</button>
+
           @if (modalAcao() !== 'visualizar') {
-            <button
-              class="btn"
-              [class.btn-danger]="modalAcao() === 'excluir'"
-              [class.btn-primary]="modalAcao() !== 'excluir'"
-              (click)="confirmarModal()"
-            >
-              @if (modalAcao() === 'excluir') { Excluir } @else if (modalAcao() === 'inserir') { Salvar } @else { Atualizar }
-            </button>
+            @if (modalAcao() === 'excluir') {
+              <button class="btn"
+                [style.background-color]="cfg.btnExcluirBg()"
+                [style.color]="cfg.btnExcluirText()"
+                (click)="confirmarModal()">🗑️ Excluir</button>
+            } @else if (modalAcao() === 'inserir') {
+              <button class="btn"
+                [style.background-color]="cfg.btnSalvarBg()"
+                [style.color]="cfg.btnSalvarText()"
+                (click)="confirmarModal()">💾 Salvar</button>
+            } @else {
+              <button class="btn"
+                [style.background-color]="cfg.btnAlterarBg()"
+                [style.color]="cfg.btnAlterarText()"
+                (click)="confirmarModal()">✏️ Atualizar</button>
+            }
           }
         </div>
+
       </div>
     </div>
   </div>

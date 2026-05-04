@@ -140,6 +140,7 @@
               <div class="col-md-6 mb-3">
                 <label class="form-label">E-mail</label>
                 <input type="email" class="form-control" placeholder="email@exemplo.com"
+                  appEmailMask
                   [value]="formEmail()"
                   (input)="formEmail.set($any($event.target).value)"
                   [readOnly]="somenteLeitura()" />

@@ -1,7 +1,4 @@
-:host {
-  display: block;
-  width: 100%;
-}
+:host { display: block; width: 100%; }
 
 .table th {
   background-color: #d9e2f3;
@@ -11,44 +8,127 @@
   top: 0;
   z-index: 1;
 }
-
-.table td {
-  vertical-align: middle;
-  font-size: 0.875rem;
-}
+.table td { vertical-align: middle; font-size: 0.875rem; }
 
 .foto-tabela {
-  width: 40px;
-  height: 40px;
+  width: 40px; height: 40px;
   border-radius: 50%;
   object-fit: cover;
   border: 1px solid #b4c6e7;
 }
 
-.cursor-pointer {
+.cursor-pointer { cursor: pointer; }
+.cursor-pointer:hover { background-color: #b4c6e7 !important; }
+
+.filtro-input {
+  font-size: 0.8rem;
+  border: 1px solid #b4c6e7;
+  border-radius: 0;
+  padding: 2px 6px;
+}
+
+/* ── Calendário ──────────────────────────────────────────────────────────── */
+.cal-nav-btn {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: #fff;
+  font-size: 1.2rem;
+  padding: 2px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  line-height: 1.4;
+}
+.cal-nav-btn:hover { background: rgba(255,255,255,0.4); }
+
+/* Grade 7 colunas */
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  overflow: hidden;
+  gap: 0;
+}
+
+/* Cabeçalho dias da semana */
+.cal-head {
+  background: #d9e2f3;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #3a63a8;
+  padding: 5px 0;
+  border-bottom: 1px solid #dee2e6;
+}
+
+/* Célula de dia */
+.cal-cell {
+  min-height: 56px;
+  padding: 4px 6px;
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  cursor: default;
+  transition: background 0.1s;
+  position: relative;
+}
+
+.cal-cell:hover { background: #f0f4ff; }
+
+.cal-num {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #212529;
+  line-height: 1.2;
+}
+
+/* Dia de outro mês */
+.cal-outro-mes .cal-num { color: #c0c0c0; }
+.cal-outro-mes { background: #fafafa; }
+
+/* Hoje */
+.cal-hoje { background: #fff3cd !important; }
+.cal-hoje .cal-num { font-weight: 800; color: #856404; }
+
+/* Dia com reserva */
+.cal-com-reserva {
+  background: #cfe2ff !important;
   cursor: pointer;
 }
+.cal-com-reserva:hover { background: #b6d4fe !important; }
+.cal-com-reserva .cal-num { color: #0d6efd; font-weight: 700; }
 
-.cursor-pointer:hover {
-  background-color: #b4c6e7 !important;
+/* Badge contador */
+.cal-badge {
+  margin-top: 3px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: #0d6efd;
+  color: #fff;
+  border-radius: 10px;
+  padding: 1px 6px;
+  line-height: 1.4;
 }
 
+/* Legenda */
+.leg-dot {
+  display: inline-block;
+  width: 12px; height: 12px;
+  border-radius: 3px;
+}
+
+/* ── Modais ───────────────────────────────────────────────────────────────── */
 .modal-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.6);
+  position: fixed; top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.6);
   z-index: 9998;
 }
-
 .modal.d-block {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  position: fixed; top: 0; left: 0;
+  width: 100vw; height: 100vh;
   z-index: 9999;
   display: flex !important;
   align-items: center;

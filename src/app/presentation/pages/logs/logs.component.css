@@ -1,0 +1,68 @@
+:host { display: block; width: 100%; }
+
+/* ── Tabela ──────────────────────────────────────────────────────────────── */
+.log-table {
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 0.8rem;
+  border-collapse: collapse;
+}
+
+.log-table th {
+  background-color: #4472c4;
+  color: #fff;
+  font-weight: 600;
+  white-space: nowrap;
+  padding: 5px 8px;
+  border-color: #3a63a8;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.log-table td {
+  padding: 3px 8px;
+  vertical-align: top;
+  border-color: #e9ecef;
+}
+
+.th-sort { cursor: pointer; user-select: none; }
+.th-sort:hover { background-color: #3a63a8 !important; }
+.sort-icon { font-size: 0.65rem; opacity: 0.8; }
+
+.col-linha  { width: 55px; min-width: 55px; }
+.col-ts     { width: 180px; min-width: 180px; }
+.col-nivel  { width: 90px; min-width: 90px; }
+
+.msg-cell {
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+/* ── Cores por nível ─────────────────────────────────────────────────────── */
+tr.nivel-error { background-color: #fff0f0 !important; }
+tr.nivel-error td { color: #842029; }
+
+tr.nivel-warn  { background-color: #fffbea !important; }
+tr.nivel-warn td { color: #664d03; }
+
+tr.nivel-info  { background-color: #f0f8ff !important; }
+tr.nivel-debug { background-color: #f8f9fa !important; }
+tr.nivel-trace { background-color: #fafafa !important; color: #aaa; }
+
+/* Badge nível */
+.nivel-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: #e9ecef;
+  color: #495057;
+  text-transform: uppercase;
+}
+
+tr.nivel-error .nivel-badge { background: #f8d7da; color: #842029; }
+tr.nivel-warn  .nivel-badge { background: #fff3cd; color: #664d03; }
+tr.nivel-info  .nivel-badge { background: #cff4fc; color: #055160; }
+tr.nivel-debug .nivel-badge { background: #d1e7dd; color: #0a3622; }
+tr.nivel-trace .nivel-badge { background: #e2e3e5; color: #41464b; }

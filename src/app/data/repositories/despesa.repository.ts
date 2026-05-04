@@ -13,4 +13,16 @@ export class DespesaRepository extends DespesaPort {
   listar(): Observable<Despesa[]> {
     return this.http.get<Despesa[]>(API_URL);
   }
+
+  criar(despesa: Partial<Despesa>): Observable<Despesa> {
+    return this.http.post<Despesa>(API_URL, despesa);
+  }
+
+  atualizar(id: number, despesa: Partial<Despesa>): Observable<void> {
+    return this.http.put<void>(`${API_URL}/${id}`, despesa);
+  }
+
+  excluir(id: number): Observable<void> {
+    return this.http.delete<void>(`${API_URL}/${id}`);
+  }
 }

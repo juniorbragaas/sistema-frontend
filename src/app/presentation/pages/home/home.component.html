@@ -7,34 +7,22 @@
       </div>
       <div class="card-body p-0">
         @if (loadingPessoas()) {
-          <div class="text-center p-4">
-            <span class="spinner-border spinner-border-sm"></span> Carregando...
-          </div>
+          <div class="text-center p-4"><span class="spinner-border spinner-border-sm"></span> Carregando...</div>
         } @else {
-          <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+          <div class="table-responsive" style="max-height:500px;overflow-y:auto;">
             <table class="table table-sm mb-0">
               <thead>
                 <tr><th>Foto</th><th>Nome</th></tr>
                 <tr>
                   <th></th>
-                  <th>
-                    <input type="text" class="form-control form-control-sm filtro-input"
-                      placeholder="Filtrar nome..."
-                      [value]="filtroPessoaNome()"
-                      (input)="filtroPessoaNome.set($any($event.target).value)" />
-                  </th>
+                  <th><input type="text" class="form-control form-control-sm filtro-input" placeholder="Filtrar nome..."
+                    [value]="filtroPessoaNome()" (input)="filtroPessoaNome.set($any($event.target).value)" /></th>
                 </tr>
               </thead>
               <tbody>
                 @for (p of pessoasFiltradas(); track p.id) {
                   <tr class="cursor-pointer" (click)="onPessoaClick(p)">
-                    <td>
-                      @if (p.foto) {
-                        <img [src]="hexToDataUrl(p.foto)" alt="Foto" class="foto-tabela" />
-                      } @else {
-                        <span>👤</span>
-                      }
-                    </td>
+                    <td>@if (p.foto) { <img [src]="hexToDataUrl(p.foto)" alt="Foto" class="foto-tabela" /> } @else { <span>👤</span> }</td>
                     <td>{{ p.nomeCompleto }}</td>
                   </tr>
                 } @empty {
@@ -48,7 +36,7 @@
     </div>
   </div>
 
-  <!-- Convidados de Hoje -->
+  <!-- Convidados Ativos -->
   <div class="col-md-6 mb-4">
     <div class="card shadow-sm">
       <div class="card-header bg-success text-white">
@@ -56,67 +44,35 @@
       </div>
       <div class="card-body p-0">
         @if (loadingConvidados()) {
-          <div class="text-center p-4">
-            <span class="spinner-border spinner-border-sm"></span> Carregando...
-          </div>
+          <div class="text-center p-4"><span class="spinner-border spinner-border-sm"></span> Carregando...</div>
         } @else {
-          <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+          <div class="table-responsive" style="max-height:500px;overflow-y:auto;">
             <table class="table table-sm mb-0">
               <thead>
-                <tr><th>Foto</th><th>Visitante</th><th>Foto Responsável</th><th>Responsável</th><th>Data Entrada</th><th>Data Saída</th></tr>
+                <tr><th>Foto</th><th>Visitante</th><th>Responsável</th><th>Entrada</th><th>Saída</th></tr>
                 <tr>
                   <th></th>
-                  <th>
-                    <input type="text" class="form-control form-control-sm filtro-input"
-                      placeholder="Filtrar visitante..."
-                      [value]="filtroConvidadoNome()"
-                      (input)="filtroConvidadoNome.set($any($event.target).value)" />
-                  </th>
-                  <th></th>
-                  <th>
-                    <input type="text" class="form-control form-control-sm filtro-input"
-                      placeholder="Filtrar responsável..."
-                      [value]="filtroResponsavel()"
-                      (input)="filtroResponsavel.set($any($event.target).value)" />
-                  </th>
-                  <th>
-                    <input type="text" class="form-control form-control-sm filtro-input"
-                      placeholder="YYYY-MM-DD"
-                      [value]="filtroDataEntrada()"
-                      (input)="filtroDataEntrada.set($any($event.target).value)" />
-                  </th>
-                  <th>
-                    <input type="text" class="form-control form-control-sm filtro-input"
-                      placeholder="YYYY-MM-DD"
-                      [value]="filtroDataSaida()"
-                      (input)="filtroDataSaida.set($any($event.target).value)" />
-                  </th>
+                  <th><input type="text" class="form-control form-control-sm filtro-input" placeholder="Visitante..."
+                    [value]="filtroConvidadoNome()" (input)="filtroConvidadoNome.set($any($event.target).value)" /></th>
+                  <th><input type="text" class="form-control form-control-sm filtro-input" placeholder="Responsável..."
+                    [value]="filtroResponsavel()" (input)="filtroResponsavel.set($any($event.target).value)" /></th>
+                  <th><input type="text" class="form-control form-control-sm filtro-input" placeholder="YYYY-MM-DD"
+                    [value]="filtroDataEntrada()" (input)="filtroDataEntrada.set($any($event.target).value)" /></th>
+                  <th><input type="text" class="form-control form-control-sm filtro-input" placeholder="YYYY-MM-DD"
+                    [value]="filtroDataSaida()" (input)="filtroDataSaida.set($any($event.target).value)" /></th>
                 </tr>
               </thead>
               <tbody>
                 @for (c of convidadosHoje(); track c.id) {
                   <tr>
-                    <td>
-                      @if (c.foto) {
-                        <img [src]="hexToDataUrl(c.foto)" alt="Foto" class="foto-tabela" />
-                      } @else {
-                        <span>👤</span>
-                      }
-                    </td>
+                    <td>@if (c.foto) { <img [src]="hexToDataUrl(c.foto)" alt="Foto" class="foto-tabela" /> } @else { <span>👤</span> }</td>
                     <td>{{ c.visitante }}</td>
-                    <td>
-                      @if (c.pessoa?.foto) {
-                        <img [src]="hexToDataUrl(c.pessoa!.foto)" alt="Foto Responsável" class="foto-tabela" />
-                      } @else {
-                        <span>👤</span>
-                      }
-                    </td>
                     <td>{{ c.pessoa?.nomeCompleto }}</td>
                     <td>{{ formatarData(c.dataEntrada) }}</td>
                     <td>{{ formatarData(c.dataSaida) }}</td>
                   </tr>
                 } @empty {
-                  <tr><td colspan="6" class="text-center text-muted p-3">Nenhum convidado hoje.</td></tr>
+                  <tr><td colspan="5" class="text-center text-muted p-3">Nenhum convidado hoje.</td></tr>
                 }
               </tbody>
             </table>
@@ -127,7 +83,110 @@
   </div>
 </div>
 
-<!-- Modal Visitantes da Pessoa -->
+<!-- ── Calendário de Reservas ──────────────────────────────────────────────── -->
+<div class="row mt-2">
+  <div class="col-12">
+    <div class="card shadow-sm">
+
+      <!-- Cabeçalho -->
+      <div class="card-header d-flex align-items-center justify-content-between"
+           style="background-color:#4472c4;color:#fff;">
+        <h5 class="mb-0">📅 Reservas do Mês</h5>
+        <div class="d-flex align-items-center gap-2">
+          <button class="cal-nav-btn" (click)="mesAnterior()">‹</button>
+          <span class="fw-semibold">{{ tituloMes() }}</span>
+          <button class="cal-nav-btn" (click)="proximoMes()">›</button>
+        </div>
+      </div>
+
+      <div class="card-body p-2">
+
+        <!-- Grade 7 colunas -->
+        <div class="cal-grid">
+
+          <!-- Cabeçalho dias da semana -->
+          @for (ds of DIAS_SEMANA; track ds) {
+            <div class="cal-head">{{ ds }}</div>
+          }
+
+          <!-- Células dos dias -->
+          @for (dia of diasCalendario(); track $index) {
+            <div class="cal-cell"
+              [class.cal-outro-mes]="!dia.mesAtual"
+              [class.cal-hoje]="dia.diaAtual"
+              [class.cal-com-reserva]="dia.temReserva"
+              (click)="abrirReservasDia(dia)">
+              <span class="cal-num">{{ dia.data.getDate() }}</span>
+              @if (dia.temReserva) {
+                <span class="cal-badge">{{ dia.qtdReservas }}</span>
+              }
+            </div>
+          }
+
+        </div>
+
+        <!-- Legenda -->
+        <div class="d-flex gap-3 mt-2" style="font-size:0.78rem;color:#6c757d;">
+          <span class="d-flex align-items-center gap-1">
+            <span class="leg-dot" style="background:#fff3cd;border:1px solid #856404;"></span> Hoje
+          </span>
+          <span class="d-flex align-items-center gap-1">
+            <span class="leg-dot" style="background:#cfe2ff;border:1px solid #0d6efd;"></span>
+            Com reservas — clique para ver
+          </span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Modal: Reservas do Dia ─────────────────────────────────────────────── -->
+@if (modalReservasDiaAberto()) {
+  <div class="modal-backdrop show"></div>
+  <div class="modal d-block" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content shadow-lg border-0">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">📅 {{ labelDiaSelecionado() }}</h5>
+          <button type="button" class="btn-close btn-close-white" (click)="fecharModalReservasDia()"></button>
+        </div>
+        <div class="modal-body p-0">
+          <table class="table table-sm mb-0">
+            <thead>
+              <tr>
+                <th>Responsável</th>
+                <th>Hora Início</th>
+                <th>Hora Final</th>
+                <th>Valor</th>
+                <th>Descrição</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (r of reservasDoDia(); track r.id) {
+                <tr>
+                  <td><strong>{{ r.responsavel }}</strong></td>
+                  <td>🕐 {{ formatarHora(r.horaInicio) }}</td>
+                  <td>🕐 {{ formatarHora(r.horaFinal) }}</td>
+                  <td>{{ r.valor | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+                  <td class="text-muted">{{ r.descricao || '—' }}</td>
+                </tr>
+              } @empty {
+                <tr><td colspan="5" class="text-center text-muted p-3">Nenhuma reserva neste dia.</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer border-0">
+          <span class="text-muted me-auto">{{ reservasDoDia().length }} reserva(s)</span>
+          <button class="btn btn-outline-secondary" (click)="fecharModalReservasDia()">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ── Modal: Visitantes da Pessoa ────────────────────────────────────────── -->
 @if (modalPessoaAberto()) {
   <div class="modal-backdrop show"></div>
   <div class="modal d-block" tabindex="-1" role="dialog">
@@ -138,21 +197,13 @@
           <button type="button" class="btn-close btn-close-white" (click)="fecharModalPessoa()"></button>
         </div>
         <div class="modal-body p-0">
-          <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+          <div class="table-responsive" style="max-height:400px;overflow-y:auto;">
             <table class="table table-sm mb-0">
-              <thead>
-                <tr><th>Foto</th><th>Visitante</th></tr>
-              </thead>
+              <thead><tr><th>Foto</th><th>Visitante</th></tr></thead>
               <tbody>
                 @for (v of visitantesDaPessoa(); track v.id) {
                   <tr>
-                    <td>
-                      @if (v.foto) {
-                        <img [src]="hexToDataUrl(v.foto)" alt="Foto" class="foto-tabela" />
-                      } @else {
-                        <span>👤</span>
-                      }
-                    </td>
+                    <td>@if (v.foto) { <img [src]="hexToDataUrl(v.foto)" alt="Foto" class="foto-tabela" /> } @else { <span>👤</span> }</td>
                     <td>{{ v.visitante }}</td>
                   </tr>
                 } @empty {
