@@ -2,6 +2,7 @@ import { Component, inject, effect } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
 import { AppConfigService } from './core/services/app-config.service';
+import { FaviconService } from './core/services/favicon.service';
 
 @Component({
   selector: 'app-root',
@@ -12,6 +13,7 @@ import { AppConfigService } from './core/services/app-config.service';
 export class App {
   private title = inject(Title);
   private appConfig = inject(AppConfigService);
+  private favicon = inject(FaviconService);  // Injetar para inicializar o serviço
 
   constructor() {
     // Atualiza o <title> da página sempre que appName mudar

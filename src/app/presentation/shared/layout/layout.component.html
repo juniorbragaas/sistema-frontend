@@ -8,6 +8,39 @@
     <div class="sidebar-header">Menu</div>
     <hr />
 
+    <!-- Busca de Menu -->
+    <div class="menu-search p-2">
+      <input type="text" 
+        class="form-control search-input"
+        placeholder="🔍 Buscar menu..."
+        [(ngModel)]="termoBusca"
+        (input)="buscarMenu()"
+        (keydown.enter)="acessarItemSelecionado()"
+        (keydown.arrowdown)="navegarResultados('baixo')"
+        (keydown.arrowup)="navegarResultados('cima')"
+        (keydown.escape)="fecharBusca()"
+        [style.background-color]="sidebarBgColor()"
+        [style.color]="sidebarTextColor()"
+        [style.border-color]="sidebarTextColor()" />
+
+      <!-- Dropdown de resultados -->
+      @if (resultadosBusca().length > 0) {
+        <div class="search-dropdown">
+          @for (item of resultadosBusca(); track item.url; let i = $index) {
+            <div class="search-item"
+              [class.selected]="itemSelecionado() === i"
+              (click)="acessarMenuBuscado(item)"
+              (mouseenter)="selecionarItem(i)"
+              [style.color]="sidebarTextColor()">
+              {{ item.nome }}
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <hr />
+
     <ul class="nav flex-column">
       @for (node of arvore(); track node.id) {
         <ng-container *ngTemplateOutlet="menuItem; context: { $implicit: node }" />

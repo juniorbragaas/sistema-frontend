@@ -5,7 +5,27 @@
   <title>Sistema</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/x-icon" href="favicon.ico" id="favicon">
+  
+  <script>
+    // Script para carregar o ícone do sistema do localStorage
+    (function() {
+      try {
+        const config = localStorage.getItem('app_config');
+        if (config) {
+          const appConfig = JSON.parse(config);
+          if (appConfig.appIcon && appConfig.appIcon.startsWith('data:')) {
+            // Se o ícone é uma data URL (base64), usar como favicon
+            const link = document.getElementById('favicon');
+            link.href = appConfig.appIcon;
+          }
+        }
+      } catch (e) {
+        // Se houver erro, usar o favicon padrão
+        console.log('Usando favicon padrão');
+      }
+    })();
+  </script>
 </head>
 <body>
   <app-root></app-root>
