@@ -8,6 +8,11 @@ export const routes: Routes = [
       import('./presentation/pages/login/login.component').then(m => m.LoginComponent),
   },
   {
+    path: 'fila-atendimento',
+    loadComponent: () =>
+      import('./presentation/pages/fila-atendimento/fila-atendimento.component').then(m => m.FilaAtendimentoComponent),
+  },
+  {
     path: '',
     loadComponent: () =>
       import('./presentation/shared/layout/layout.component').then(m => m.LayoutComponent),
@@ -129,6 +134,16 @@ export const routes: Routes = [
           { label: 'Home', url: '/home' },
           { label: 'Reservas' },
           { label: 'Agendamento', url: '/agendamento' },
+        ]},
+      },
+      {
+        path: 'atendimento-planejado',
+        loadComponent: () =>
+          import('./presentation/pages/atendimento-planejado/atendimento-planejado.component').then(m => m.AtendimentoPlanejadoComponent),
+        data: { breadcrumbs: [
+          { label: 'Home', url: '/home' },
+          { label: 'Atendimento' },
+          { label: 'Atendimento Planejado', url: '/atendimento-planejado' },
         ]},
       },
       {

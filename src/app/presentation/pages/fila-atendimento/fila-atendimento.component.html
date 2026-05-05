@@ -1,0 +1,181 @@
+<div class="fila-container">
+  <div class="fila-header">
+    <h1 class="fila-title">FILA DE ATENDIMENTO</h1>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <span class="spinner-border" role="status"></span>
+      <p class="mt-2 text-muted">Carregando fila de atendimento...</p>
+    </div>
+  } @else if (erro()) {
+    <div class="alert alert-danger" role="alert">
+      {{ erro() }}
+    </div>
+  } @else {
+    <div class="fila-content">
+      <!-- 3 Colunas: Próximo Atendimento | Atendimento Atual | Finalizados -->
+      <div class="fila-main-container">
+        <!-- Coluna 1: Próximo Atendimento com Atendimentos em Fila -->
+        <div class="proximo-atendimento-section">
+          <div class="proximo-label">PRÓXIMO ATENDIMENTO</div>
+          @if (proximoAtendimento()) {
+            <div class="proximo-display">
+              <div class="proximo-numero">
+                {{ formatarSenha(proximoAtendimento()!.ordem) }}
+              </div>
+              <div class="proximo-info">
+                <p><strong>Nome:</strong> {{ proximoAtendimento()!.nome }}</p>
+                <p><strong>Setor:</strong> {{ proximoAtendimento()!.setor }}</p>
+                <p><strong>Número:</strong> {{ proximoAtendimento()!.numero }}</p>
+                <p><strong>Atendente:</strong> {{ proximoAtendimento()!.atendente }}</p>
+              </div>
+            </div>
+          } @else {
+            <div class="proximo-vazio">
+              <p>Nenhum atendimento na fila</p>
+            </div>
+          }
+          
+          <!-- Atendimentos em Fila dentro de Próximo Atendimento -->
+          <div class="fila-list-section-inside">
+            <div class="fila-list-header">ATENDIMENTOS EM FILA</div>
+            @if (atendimentosEmFila().length > 0) {
+              <div class="fila-list">
+                @for (item of atendimentosEmFila(); track item.id; let i = $index) {
+                  <div class="fila-item" [class.primeiro]="i === 0">
+                    <div class="fila-item-numero">
+                      {{ formatarSenha(item.ordem) }}
+                    </div>
+                    <div class="fila-item-info">
+                      <p class="fila-item-nome">{{ item.nome }}</p>
+                      <p class="fila-item-setor">{{ item.setor }}</p>
+                      <p class="fila-item-numero-contato">{{ item.numero }}</p>
+                    </div>
+                    <div class="fila-item-posicao">
+                      #{{ i + 1 }}
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="fila-vazia">
+                <p>Nenhum atendimento na fila no momento</p>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Coluna 2: Atendimento Atual no Meio -->
+        
+        <div class="atendimento-atual-section-middle">
+        
+          <div class="atendimento-atual-label">ATENDIMENTO ATUAL</div>
+          @if (atendimentoAtual()) {
+            <div class="atendimento-atual-display">
+                 <div id="meio">
+              <div class="atendimento-atual-numero">
+                {{ formatarSenha(atendimentoAtual()!.ordem) }}
+              </div>
+                </div>
+              <div class="atendimento-atual-info">
+                <p><strong>Nome:</strong> {{ atendimentoAtual()!.nome }}</p>
+                <p><strong>Setor:</strong> {{ atendimentoAtual()!.setor }}</p>
+                <p><strong>Número:</strong> {{ atendimentoAtual()!.numero }}</p>
+                <p><strong>Atendente:</strong> {{ atendimentoAtual()!.atendente }}</p>
+              </div>
+            </div>
+          } @else {
+            <div class="atendimento-atual-vazio">
+              <p>Nenhum atendimento em andamento</p>
+            </div>
+          }
+          <!-- Total na Fila -->
+          <div class="total-fila-section">
+            <div class="total-label">TOTAL NA FILA</div>
+            <div class="total-display">
+              {{ totalNaFila() }}
+            </div>
+          </div>
+      
+        </div>
+
+        <!-- Coluna 3: Finalizados com Atendimentos em Andamento -->
+        <div class="finalizados-section">
+          <div class="finalizados-label">FINALIZADOS</div>
+          @if (atendimentosFinalizados().length > 0) {
+            <div class="finalizados-list">
+              @for (item of atendimentosFinalizados().slice(0, 5); track item.id) {
+                <div class="finalizados-item">
+                  <div class="finalizados-numero">
+                    {{ formatarSenha(item.ordem) }}
+                  </div>
+                  <div class="finalizados-info">
+                    <p class="finalizados-nome">{{ item.nome }}</p>
+                    <p class="finalizados-setor">{{ item.setor }}</p>
+                    <p class="finalizados-atendente">{{ item.atendente }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="finalizados-vazio">
+              <p>Nenhum atendimento finalizado</p>
+            </div>
+          }
+
+          <!-- Atendimentos em Andamento dentro de Finalizados -->
+          <div class="fila-list-section-inside">
+            <div class="fila-list-header atendimento-header">ATENDIMENTOS EM ANDAMENTO</div>
+            @if (atendimentosEmAtendimento().length > 0) {
+              <div class="fila-list">
+                @for (item of atendimentosEmAtendimento(); track item.id; let i = $index) {
+                  <div class="fila-item atendimento-item">
+                    <div class="fila-item-numero">
+                      {{ formatarSenha(item.ordem) }}
+                    </div>
+                    <div class="fila-item-info">
+                      <p class="fila-item-nome">{{ item.nome }}</p>
+                      <p class="fila-item-setor">{{ item.setor }}</p>
+                      <p class="fila-item-numero-contato">{{ item.numero }}</p>
+                      <p class="fila-item-atendente"><strong>Atendente:</strong> {{ item.atendente }}</p>
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="fila-vazia">
+                <p>Nenhum atendimento em atendimento no momento</p>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Auto-refresh Indicator -->
+      <div class="auto-refresh-indicator">
+        <span class="refresh-dot"></span>
+        <span class="refresh-text">Atualizando a cada 5 segundos</span>
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Modal de Chamada de Senha -->
+@if (mostraModalChamada()) {
+  <div class="modal-chamada-backdrop"></div>
+  <div class="modal-chamada">
+    <div class="modal-chamada-content">
+      <div class="modal-chamada-header">
+        <h1 class="modal-chamada-titulo">CHAMANDO SENHA</h1>
+      </div>
+      <div class="modal-chamada-body">
+        @if (atendimentoAtual()) {
+          <div class="modal-chamada-numero">
+            {{ formatarSenha(atendimentoAtual()!.ordem) }}
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}

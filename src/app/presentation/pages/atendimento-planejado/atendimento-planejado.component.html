@@ -1,0 +1,135 @@
+<div class="card shadow-sm w-100">
+  <app-page-title titulo="Atendimento Planejado" />
+  <div class="card-body p-0">
+    <!-- Botão Gerar Senha acima da tabela -->
+    <div class="d-flex justify-content-end p-3 border-bottom gap-3">
+      <button class="btn btn-primary" 
+        (click)="atenderProximoDaFila()"
+        [disabled]="!proximoAtendimento()"
+        title="Atender o Próximo da Fila">
+        👤 Atender o Próximo da Fila
+      </button>
+      <button class="btn btn-success" 
+        (click)="gerarSenhaAtendimento()"
+        [disabled]="carregandoSenha()"
+        title="Gerar Senha de Atendimento">
+        🔐 {{ carregandoSenha() ? 'Gerando...' : 'Gerar Senha de Atendimento' }}
+      </button>
+    </div>
+
+    @if (loading()) {
+      <div class="text-center p-4">
+        <span class="spinner-border" role="status"></span>
+        <p class="mt-2 text-muted">Carregando...</p>
+      </div>
+    } @else if (erro()) {
+      <div class="alert alert-danger m-3" role="alert">{{ erro() }}</div>
+    } @else {
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <thead>
+            <tr>
+              @for (col of colunas; track col.key) {
+                <th>
+                  {{ col.label }}
+                </th>
+              }
+              <th class="text-center col-acao">
+                Ação
+              </th>
+            </tr>
+            <tr>
+              @for (col of colunas; track col.key) {
+                <th>
+                  <input type="text" class="form-control form-control-sm filtro-input"
+                    placeholder="Filtrar..."
+                    [value]="filtros()[col.key] ?? ''"
+                    (input)="onFiltroChange(col.key, $any($event.target).value)" />
+                </th>
+              }
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of dadosPaginados(); track item.id) {
+              <tr>
+                <td>{{ item.ordem }}</td>
+                <td>
+                  <span class="badge" [style.background-color]="obterStatusCor(item.status)">
+                    {{ item.status }}
+                  </span>
+                </td>
+                <td>{{ item.dataEntrada | date: 'dd/MM/yyyy HH:mm' }}</td>
+                <td>{{ item.nome }}</td>
+                <td>{{ item.atendente }}</td>
+                <td>{{ item.setor }}</td>
+                <td>{{ item.numero }}</td>
+                <td>{{ calcularTempoAtendimento(item) }}</td>
+                <td class="text-center text-nowrap">
+                  <button class="btn btn-sm btn-danger" 
+                    (click)="finalizarAtendimento(item.id)"
+                    title="Finalizar Atendimento"
+                    [disabled]="item.status === 'FINALIZADO'">
+                    ✓ Finalizar
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td [attr.colspan]="colunas.length + 1" class="text-center text-muted p-3">
+                  Nenhum registro encontrado.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-content-end align-items-center p-3 border-top gap-3">
+        <span class="text-muted">{{ dadosFiltrados().length }} registro(s) encontrado(s)</span>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="paginaAtual() === 1" (click)="irParaPagina(1)">«</button>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="paginaAtual() === 1" (click)="irParaPagina(paginaAtual() - 1)">‹ Anterior</button>
+        <span>{{ paginaAtual() }} / {{ totalPaginas() }}</span>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="paginaAtual() === totalPaginas()" (click)="irParaPagina(paginaAtual() + 1)">Próxima ›</button>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="paginaAtual() === totalPaginas()" (click)="irParaPagina(totalPaginas())">»</button>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Modal de Senha de Atendimento -->
+@if (mostraSenha()) {
+  <div class="modal-backdrop show"></div>
+  <div class="modal d-block" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content shadow-lg border-0">
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title">🔐 Senha de Atendimento Gerada</h5>
+          <button type="button" class="btn-close btn-close-white" (click)="fecharSenha()"></button>
+        </div>
+        <div class="modal-body text-center">
+          <p class="text-muted mb-3">Sua senha de atendimento foi gerada com sucesso!</p>
+          <div class="senha-display">
+            {{ formatarSenha(senhaGerada()?.ordem || 0) }}
+          </div>
+          <div class="info-atendimento mt-4">
+            <p class="mb-2"><strong>Nome:</strong> {{ senhaGerada()?.nome || '-' }}</p>
+            <p class="mb-3"><strong>Número:</strong> {{ senhaGerada()?.numero || '-' }}</p>
+          </div>
+          <p class="text-muted small mt-3">Clique nos botões abaixo para copiar ou imprimir a senha</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="fecharSenha()">
+            ✕ Fechar
+          </button>
+          <button type="button" class="btn btn-info" (click)="imprimirSenha()">
+            🖨️ Imprimir Senha
+          </button>
+          <button type="button" class="btn btn-success btn-copy-senha" (click)="copiarSenha()">
+            📋 Copiar Senha
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

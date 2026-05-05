@@ -1,0 +1,609 @@
+.fila-container {
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  flex-direction: column;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden;
+}
+
+.fila-header {
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 20px;
+  text-align: center;
+  border-bottom: 3px solid rgba(255, 255, 255, 0.2);
+}
+
+.fila-title {
+  color: white;
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: 2px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  color: white;
+}
+
+.loading-container .spinner-border {
+  color: white;
+  width: 3rem;
+  height: 3rem;
+}
+
+.alert {
+  margin: 20px;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.fila-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  gap: 20px;
+  overflow-y: auto;
+}
+
+.fila-main-container {
+  display: flex;
+  gap: 20px;
+  flex: 1;
+  overflow: hidden;
+  width: 100%;
+}
+
+.proximo-atendimento-section {
+  flex: 0 0 15%;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.proximo-label {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.proximo-display {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+.proximo-numero {
+  font-size: 3.5rem;
+  font-weight: bold;
+  color: #667eea;
+  padding: 20px;
+  background-color: #f0f0f0;
+  border-radius: 12px;
+  font-family: 'Courier New', monospace;
+  border: 3px solid #667eea;
+  min-width: 150px;
+}
+
+.proximo-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.proximo-info p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.proximo-info strong {
+  color: #333;
+  font-weight: 600;
+}
+
+.proximo-vazio {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+  font-size: 1.5rem;
+}
+
+.fila-list-section-inside {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+  border-top: 2px solid #ddd;
+  padding-top: 10px;
+  overflow: hidden;
+}
+
+.fila-list-header {
+  font-size: 0.95rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.fila-list-header.atendimento-header {
+  color: #28a745;
+}
+
+.fila-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fila-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-left: 4px solid #ddd;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.fila-item.primeiro {
+  background-color: #e8f5e9;
+  border-left-color: #28a745;
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.2);
+}
+
+.fila-item:hover {
+  background-color: #f0f0f0;
+  transform: translateX(5px);
+}
+
+.fila-item-numero {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #667eea;
+  min-width: 70px;
+  text-align: center;
+  padding: 8px;
+  background-color: white;
+  border-radius: 6px;
+  font-family: 'Courier New', monospace;
+  border: 2px solid #667eea;
+}
+
+.fila-item.primeiro .fila-item-numero {
+  color: #28a745;
+  border-color: #28a745;
+}
+
+.fila-item-info {
+  flex: 1;
+}
+
+.fila-item-nome {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.fila-item-setor {
+  margin: 3px 0 0 0;
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.fila-item-numero-contato {
+  margin: 2px 0 0 0;
+  font-size: 0.7rem;
+  color: #999;
+}
+
+.fila-item-posicao {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #999;
+  min-width: 50px;
+  text-align: right;
+}
+
+.fila-item.atendimento-item {
+  background-color: #f0f8f0;
+  border-left-color: #28a745;
+}
+
+.fila-item.atendimento-item .fila-item-numero {
+  color: #28a745;
+  border-color: #28a745;
+}
+
+.fila-vazia {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+  font-size: 1.1rem;
+}
+
+.atendimento-atual-section-middle {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 3px solid #28a745;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+}
+
+.atendimento-atual-label {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #28a745;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.atendimento-atual-display {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  width: 100%;
+}
+
+#meio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 70%;
+  min-width: 70%;
+}
+
+.atendimento-atual-numero {
+  font-size: clamp(8rem, 25vw, 20rem);
+  font-weight: bold;
+  color: #28a745;
+  padding: 40px;
+  background-color: #f0f8f0;
+  border-radius: 12px;
+  font-family: 'Courier New', monospace;
+  border: 3px solid #28a745;
+  max-width: 100%;
+  text-align: center;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.atendimento-atual-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: center;
+}
+
+.atendimento-atual-info p {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #555;
+}
+
+.atendimento-atual-vazio {
+  text-align: center;
+  padding: 60px;
+  color: #999;
+  font-size: 1.8rem;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.total-fila-section {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.total-label {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.total-display {
+  font-size: 3.5rem;
+  font-weight: bold;
+  color: #764ba2;
+  font-family: 'Courier New', monospace;
+}
+
+.finalizados-section {
+  flex: 0 0 15%;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  border: 3px solid #6c757d;
+}
+
+.finalizados-label {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #6c757d;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+.finalizados-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.finalizados-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  background-color: #f9f9f9;
+  border-left: 4px solid #6c757d;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.finalizados-item:hover {
+  background-color: #f0f0f0;
+  transform: translateX(5px);
+}
+
+.finalizados-numero {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #6c757d;
+  min-width: 60px;
+  text-align: center;
+  padding: 6px;
+  background-color: white;
+  border-radius: 6px;
+  font-family: 'Courier New', monospace;
+  border: 2px solid #6c757d;
+}
+
+.finalizados-info {
+  flex: 1;
+}
+
+.finalizados-nome {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.finalizados-setor {
+  margin: 2px 0 0 0;
+  font-size: 0.7rem;
+  color: #666;
+}
+
+.finalizados-atendente {
+  margin: 2px 0 0 0;
+  font-size: 0.65rem;
+  color: #999;
+}
+
+.finalizados-vazio {
+  text-align: center;
+  padding: 30px;
+  color: #999;
+  font-size: 1rem;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auto-refresh-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  margin-top: 10px;
+}
+
+.refresh-dot {
+  width: 10px;
+  height: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+}
+
+.refresh-text {
+  font-style: italic;
+}
+
+.modal-chamada-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2000;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.modal-chamada {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2050;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.modal-chamada-content {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+  animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modal-chamada-header {
+  margin-bottom: 40px;
+}
+
+.modal-chamada-titulo {
+  font-size: 4rem;
+  font-weight: bold;
+  color: white;
+  margin: 0;
+  letter-spacing: 3px;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.modal-chamada-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  flex: 1;
+  justify-content: center;
+}
+
+.modal-chamada-numero {
+  font-size: 15rem;
+  font-weight: bold;
+  color: white;
+  padding: 60px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  font-family: 'Courier New', monospace;
+  border: 5px solid white;
+  min-width: 500px;
+  text-align: center;
+  text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.4);
+  animation: pulse 1s infinite;
+}
+
+
+
+@media (max-width: 768px) {
+  .fila-title {
+    font-size: 1.8rem;
+  }
+
+  .fila-content {
+    padding: 15px;
+    gap: 15px;
+  }
+
+  .proximo-numero {
+    font-size: 3rem;
+    min-width: auto;
+  }
+
+  .atendimento-atual-numero {
+    font-size: 3rem;
+    min-width: auto;
+  }
+
+  .finalizados-numero {
+    font-size: 1.2rem;
+    min-width: 60px;
+  }
+
+  .fila-item {
+    flex-wrap: wrap;
+  }
+
+  .fila-item-numero {
+    font-size: 1.5rem;
+    min-width: 80px;
+  }
+
+  .fila-item-posicao {
+    width: 100%;
+    text-align: left;
+    margin-top: 10px;
+  }
+}
