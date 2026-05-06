@@ -1,0 +1,157 @@
+<div class="validar-container">
+
+  <!-- ── Cabeçalho ─────────────────────────────────────────────────────── -->
+  <div class="validar-header">
+    <div class="validar-logo">🎟️</div>
+    <h1 class="validar-titulo">Validar Ingresso</h1>
+    <p class="validar-subtitulo">Aponte a câmera para o QR Code do ingresso</p>
+  </div>
+
+  <!-- ── Scanner ───────────────────────────────────────────────────────── -->
+  @if (etapa() === 'scanner') {
+    <div class="scanner-section">
+
+      <!-- Seletor de câmera (quando há mais de uma) -->
+      @if (camerasDisponiveis().length > 1) {
+        <div class="camera-select-wrap">
+          <select class="camera-select"
+            [value]="cameraAtualId()"
+            (change)="trocarCamera($any($event.target).value)">
+            @for (cam of camerasDisponiveis(); track cam.deviceId) {
+              <option [value]="cam.deviceId">{{ cam.label || 'Câmera ' + $index }}</option>
+            }
+          </select>
+        </div>
+      }
+
+      <!-- Viewfinder -->
+      <div class="scanner-viewfinder">
+        <video #videoEl class="scanner-video" autoplay muted playsinline></video>
+        <div class="scanner-overlay">
+          <div class="scanner-frame">
+            <span class="corner tl"></span>
+            <span class="corner tr"></span>
+            <span class="corner bl"></span>
+            <span class="corner br"></span>
+            <div class="scanner-line"></div>
+          </div>
+        </div>
+        <p class="scanner-hint">Posicione o QR Code dentro da moldura</p>
+      </div>
+    </div>
+  }
+
+  <!-- ── Carregando ─────────────────────────────────────────────────────── -->
+  @if (etapa() === 'carregando') {
+    <div class="estado-centro">
+      <div class="spinner-grande"></div>
+      <p class="estado-texto">Buscando ingresso...</p>
+    </div>
+  }
+
+  <!-- ── Resultado ─────────────────────────────────────────────────────── -->
+  @if (etapa() === 'resultado' && ingresso(); as ing) {
+    <div class="resultado-section">
+
+      <!-- Card do ingresso -->
+      <div class="ingresso-card" [class.utilizado]="ing.status === 1" [class.valido]="ing.status === 2">
+
+        <!-- Status banner -->
+        <div class="status-banner" [class.banner-utilizado]="ing.status === 1" [class.banner-valido]="ing.status === 2">
+          @if (ing.status === 1) {
+            <span class="status-icon">⚠️</span>
+            <span class="status-texto">INGRESSO JÁ UTILIZADO</span>
+          } @else {
+            <span class="status-icon">✅</span>
+            <span class="status-texto">INGRESSO VÁLIDO</span>
+          }
+        </div>
+
+        <!-- Dados do ingresso -->
+        <div class="ingresso-dados">
+          <div class="ingresso-evento">{{ ing.nomeEvento }}</div>
+          <div class="ingresso-tipo">{{ ing.tipoIngresso }}</div>
+
+          <div class="dados-grid">
+            <div class="dado-item">
+              <span class="dado-label">Comprador</span>
+              <span class="dado-valor">{{ ing.nomeComprador }}</span>
+            </div>
+            <div class="dado-item">
+              <span class="dado-label">CPF / RG</span>
+              <span class="dado-valor">{{ ing.cpfRg }}</span>
+            </div>
+            <div class="dado-item">
+              <span class="dado-label">Nascimento</span>
+              <span class="dado-valor">{{ formatarDataSomente(ing.dataNascimento) }}</span>
+            </div>
+            <div class="dado-item">
+              <span class="dado-label">Início do Evento</span>
+              <span class="dado-valor">{{ formatarData(ing.dataInicio) }}</span>
+            </div>
+            <div class="dado-item">
+              <span class="dado-label">Fim do Evento</span>
+              <span class="dado-valor">{{ formatarData(ing.dataFim) }}</span>
+            </div>
+            <div class="dado-item">
+              <span class="dado-label">Status</span>
+              <span class="dado-valor badge-status" [class.utilizado]="ing.status === 1" [class.nao-utilizado]="ing.status === 2">
+                {{ labelStatus(ing.status) }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mensagem de ingresso já utilizado -->
+        @if (ing.status === 1) {
+          <div class="aviso-utilizado">
+            <div class="aviso-icone">🚫</div>
+            <div class="aviso-texto">
+              <strong>Este ingresso já foi utilizado.</strong><br/>
+              Procure o responsável pela venda do ingresso para mais informações.
+            </div>
+          </div>
+        }
+
+        <!-- Confirmação de validação bem-sucedida -->
+        @if (validadoOk()) {
+          <div class="sucesso-validacao">
+            <div class="sucesso-icone">🎉</div>
+            <div class="sucesso-texto">
+              <strong>Ingresso validado com sucesso!</strong><br/>
+              O ingresso foi marcado como utilizado.
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Ações -->
+      <div class="acoes">
+        @if (ing.status === 2 && !validadoOk()) {
+          <button class="btn-validar" [disabled]="validando()" (click)="validarIngresso()">
+            @if (validando()) {
+              <span class="spinner-btn"></span> Validando...
+            } @else {
+              ✅ Validar Ingresso
+            }
+          </button>
+        }
+        <button class="btn-nova-leitura" (click)="novaLeitura()">
+          📷 Nova Leitura
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- ── Erro ───────────────────────────────────────────────────────────── -->
+  @if (etapa() === 'erro') {
+    <div class="estado-centro">
+      <div class="erro-icone">❌</div>
+      <p class="estado-texto erro">{{ erroMsg() }}</p>
+      <button class="btn-nova-leitura" (click)="novaLeitura()">
+        🔄 Tentar Novamente
+      </button>
+    </div>
+  }
+
+</div>

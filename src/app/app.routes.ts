@@ -13,6 +13,11 @@ export const routes: Routes = [
       import('./presentation/pages/fila-atendimento/fila-atendimento.component').then(m => m.FilaAtendimentoComponent),
   },
   {
+    path: 'validar-ingresso',
+    loadComponent: () =>
+      import('./presentation/pages/validar-ingresso/validar-ingresso.component').then(m => m.ValidarIngressoComponent),
+  },
+  {
     path: '',
     loadComponent: () =>
       import('./presentation/shared/layout/layout.component').then(m => m.LayoutComponent),
