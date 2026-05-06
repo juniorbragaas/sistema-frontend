@@ -147,6 +147,16 @@ export const routes: Routes = [
         ]},
       },
       {
+        path: 'tipo-veiculos',
+        loadComponent: () =>
+          import('./presentation/pages/tipo-veiculos/tipo-veiculos.component').then(m => m.TipoVeiculosComponent),
+        data: { breadcrumbs: [
+          { label: 'Home', url: '/home' },
+          { label: 'Estacionamento' },
+          { label: 'Tipo de Veículos', url: '/tipo-veiculos' },
+        ]},
+      },
+      {
         path: 'logs',
         loadComponent: () =>
           import('./presentation/pages/logs/logs.component').then(m => m.LogsComponent),

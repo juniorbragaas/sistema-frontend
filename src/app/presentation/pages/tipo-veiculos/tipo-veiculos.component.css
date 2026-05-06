@@ -1,0 +1,19 @@
+.col-acao {
+  width: 200px;
+}
+
+.filtro-input {
+  font-size: 0.875rem;
+}
+
+.modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.btn-sm {
+  margin: 0 2px;
+}

@@ -1,0 +1,119 @@
+<div class="card shadow-sm w-100">
+  <app-page-title titulo="Tipo de Veículos" />
+  <div class="card-body p-0">
+    <!-- Botão Novo acima da tabela -->
+    <div class="d-flex justify-content-end p-3 border-bottom gap-3">
+      <button class="btn btn-success" 
+        (click)="abrirModalNovo()"
+        title="Novo Tipo de Veículo">
+        ➕ Novo Tipo de Veículo
+      </button>
+    </div>
+
+    @if (loading()) {
+      <div class="text-center p-4">
+        <span class="spinner-border" role="status"></span>
+        <p class="mt-2 text-muted">Carregando...</p>
+      </div>
+    } @else if (erro()) {
+      <div class="alert alert-danger m-3" role="alert">{{ erro() }}</div>
+    } @else {
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <thead>
+            <tr>
+              @for (col of colunas; track col.key) {
+                <th>
+                  {{ col.label }}
+                </th>
+              }
+              <th class="text-center col-acao">
+                Ação
+              </th>
+            </tr>
+            <tr>
+              @for (col of colunas; track col.key) {
+                <th>
+                  <input type="text" class="form-control form-control-sm filtro-input"
+                    placeholder="Filtrar..."
+                    [value]="filtros()[col.key] ?? ''"
+                    (input)="onFiltroChange(col.key, $any($event.target).value)" />
+                </th>
+              }
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of dadosPaginados(); track item.id) {
+              <tr>
+                <td>{{ item.nome }}</td>
+                <td class="text-center text-nowrap">
+                  <button class="btn btn-sm btn-primary" 
+                    (click)="abrirModalEditar(item)"
+                    title="Editar">
+                    ✏️ Editar
+                  </button>
+                  <button class="btn btn-sm btn-danger" 
+                    (click)="deletar(item.id)"
+                    title="Deletar">
+                    🗑️ Deletar
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td [attr.colspan]="colunas.length + 1" class="text-center text-muted p-3">
+                  Nenhum registro encontrado.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-content-end align-items-center p-3 border-top gap-3">
+        <span class="text-muted">{{ dadosFiltrados().length }} registro(s) encontrado(s)</span>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="paginaAtual() === 1" (click)="irParaPagina(1)">«</button>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="paginaAtual() === 1" (click)="irParaPagina(paginaAtual() - 1)">‹ Anterior</button>
+        <span>{{ paginaAtual() }} / {{ totalPaginas() }}</span>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="paginaAtual() === totalPaginas()" (click)="irParaPagina(paginaAtual() + 1)">Próxima ›</button>
+        <button class="btn btn-sm btn-outline-secondary" [disabled]="paginaAtual() === totalPaginas()" (click)="irParaPagina(totalPaginas())">»</button>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Modal de Edição/Criação -->
+@if (mostraModal()) {
+  <div class="modal-backdrop show"></div>
+  <div class="modal d-block" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content shadow-lg border-0">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">{{ modalTitulo() }}</h5>
+          <button type="button" class="btn-close btn-close-white" (click)="fecharModal()"></button>
+        </div>
+        <div class="modal-body">
+          @if (tipoVeiculoEditando()) {
+            <div class="mb-3">
+              <label for="nome" class="form-label">Nome</label>
+              <input type="text" class="form-control" id="nome"
+                [(ngModel)]="tipoVeiculoEditando()!.nome"
+                placeholder="Digite o nome do tipo de veículo" />
+            </div>
+          }
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="fecharModal()">
+            ✕ Cancelar
+          </button>
+          <button type="button" class="btn btn-primary" 
+            (click)="salvar()"
+            [disabled]="carregandoModal()">
+            {{ carregandoModal() ? 'Salvando...' : '💾 Salvar' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
