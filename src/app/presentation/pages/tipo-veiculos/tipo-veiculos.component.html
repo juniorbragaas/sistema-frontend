@@ -94,14 +94,12 @@
           <button type="button" class="btn-close btn-close-white" (click)="fecharModal()"></button>
         </div>
         <div class="modal-body">
-          @if (tipoVeiculoEditando()) {
-            <div class="mb-3">
-              <label for="nome" class="form-label">Nome</label>
-              <input type="text" class="form-control" id="nome"
-                [(ngModel)]="tipoVeiculoEditando()!.nome"
-                placeholder="Digite o nome do tipo de veículo" />
-            </div>
-          }
+          <div class="mb-3">
+            <label for="nome" class="form-label">Nome</label>
+            <input type="text" class="form-control" id="nome"
+              [(ngModel)]="tipoVeiculoEditando()!.nome"
+              placeholder="Digite o nome do tipo de veículo" />
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" (click)="fecharModal()">

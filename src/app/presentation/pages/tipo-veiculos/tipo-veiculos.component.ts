@@ -93,7 +93,7 @@ export class TipoVeiculosComponent implements OnInit {
   }
 
   abrirModalNovo(): void {
-    this.tipoVeiculoEditando.set(null);
+    this.tipoVeiculoEditando.set({ id: '', nome: '' });
     this.modalTitulo.set('Novo Tipo de Veículo');
     this.mostraModal.set(true);
   }
