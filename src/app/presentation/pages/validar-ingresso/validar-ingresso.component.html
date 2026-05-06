@@ -11,7 +11,6 @@
   @if (etapa() === 'scanner') {
     <div class="scanner-section">
 
-      <!-- Seletor de câmera (quando há mais de uma) -->
       @if (camerasDisponiveis().length > 1) {
         <div class="camera-select-wrap">
           <select class="camera-select"
@@ -24,13 +23,8 @@
         </div>
       }
 
-      <!-- Viewfinder -->
       <div class="scanner-viewfinder">
-        @if (videoVisivel()) {
-          <video #videoEl class="scanner-video" autoplay muted playsinline></video>
-        } @else {
-          <div class="scanner-video scanner-video-placeholder"></div>
-        }
+        <video #videoEl class="scanner-video" autoplay muted playsinline></video>
         <div class="scanner-overlay">
           <div class="scanner-frame">
             <span class="corner tl"></span>
@@ -57,10 +51,8 @@
   @if (etapa() === 'resultado' && ingresso(); as ing) {
     <div class="resultado-section">
 
-      <!-- Card do ingresso -->
       <div class="ingresso-card" [class.utilizado]="ing.status === 1" [class.valido]="ing.status === 2">
 
-        <!-- Status banner -->
         <div class="status-banner" [class.banner-utilizado]="ing.status === 1" [class.banner-valido]="ing.status === 2">
           @if (ing.status === 1) {
             <span class="status-icon">⚠️</span>
@@ -71,7 +63,6 @@
           }
         </div>
 
-        <!-- Dados do ingresso -->
         <div class="ingresso-dados">
           <div class="ingresso-evento">{{ ing.nomeEvento }}</div>
           <div class="ingresso-tipo">{{ ing.tipoIngresso }}</div>
@@ -99,14 +90,15 @@
             </div>
             <div class="dado-item">
               <span class="dado-label">Status</span>
-              <span class="dado-valor badge-status" [class.utilizado]="ing.status === 1" [class.nao-utilizado]="ing.status === 2">
+              <span class="dado-valor badge-status"
+                [class.utilizado]="ing.status === 1"
+                [class.nao-utilizado]="ing.status === 2">
                 {{ labelStatus(ing.status) }}
               </span>
             </div>
           </div>
         </div>
 
-        <!-- Mensagem de ingresso já utilizado -->
         @if (ing.status === 1) {
           <div class="aviso-utilizado">
             <div class="aviso-icone">🚫</div>
@@ -116,22 +108,10 @@
             </div>
           </div>
         }
-
-        <!-- Confirmação de validação bem-sucedida -->
-        @if (validadoOk()) {
-          <div class="sucesso-validacao">
-            <div class="sucesso-icone">🎉</div>
-            <div class="sucesso-texto">
-              <strong>Ingresso validado com sucesso!</strong><br/>
-              O ingresso foi marcado como utilizado.
-            </div>
-          </div>
-        }
       </div>
 
-      <!-- Ações -->
       <div class="acoes">
-        @if (ing.status === 2 && !validadoOk()) {
+        @if (ing.status === 2) {
           <button class="btn-validar" [disabled]="validando()" (click)="validarIngresso()">
             @if (validando()) {
               <span class="spinner-btn"></span> Validando...
@@ -159,3 +139,21 @@
   }
 
 </div>
+
+<!-- ── Modal Validado com Sucesso ─────────────────────────────────────────── -->
+@if (modalSucessoAberto()) {
+  <div class="modal-sucesso-backdrop"></div>
+  <div class="modal-sucesso">
+    <div class="modal-sucesso-content">
+      <div class="modal-sucesso-icone">🎉</div>
+      <h2 class="modal-sucesso-titulo">Validado com Sucesso!</h2>
+      <p class="modal-sucesso-texto">
+        O ingresso foi marcado como <strong>utilizado</strong>.<br/>
+        Iniciando nova leitura...
+      </p>
+      <div class="modal-sucesso-barra">
+        <div class="modal-sucesso-progresso"></div>
+      </div>
+    </div>
+  </div>
+}

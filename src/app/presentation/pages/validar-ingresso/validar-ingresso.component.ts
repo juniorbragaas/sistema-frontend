@@ -3,6 +3,7 @@ import {
   ElementRef, ViewChild, NgZone, PLATFORM_ID
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Ingresso, STATUS_INGRESSO } from '../../../core/models/ingresso.model';
 
@@ -23,33 +24,25 @@ export class ValidarIngressoComponent implements OnInit, OnDestroy {
   private http     = inject(HttpClient);
   private ngZone   = inject(NgZone);
   private platform = inject(PLATFORM_ID);
+  private router   = inject(Router);
 
-  // ─── Estado público ───────────────────────────────────────────────────────
+  // ─── Estado ───────────────────────────────────────────────────────────────
   etapa              = signal<Etapa>('scanner');
   ingresso           = signal<Ingresso | null>(null);
   erroMsg            = signal('');
   validando          = signal(false);
-  validadoOk         = signal(false);
+  modalSucessoAberto = signal(false);
   camerasDisponiveis = signal<MediaDeviceInfo[]>([]);
   cameraAtualId      = signal<string>('');
 
-  /**
-   * Controla se o elemento <video> está no DOM.
-   * Ao setar false → Angular remove o <video> → ao setar true → Angular recria do zero.
-   * Isso garante que o ZXing sempre recebe um elemento limpo, sem stream antigo.
-   */
-  videoVisivel = signal(false);
-
-  // ─── Estado interno ───────────────────────────────────────────────────────
   private codeReader: any = null;
   private scannerAtivo    = false;
-  private BrowserMultiFormatReader: any = null;
 
   // ─── Lifecycle ────────────────────────────────────────────────────────────
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platform)) {
-      this.carregarBibliotecaEIniciar();
+      this.iniciar();
     }
   }
 
@@ -59,12 +52,11 @@ export class ValidarIngressoComponent implements OnInit, OnDestroy {
 
   // ─── Inicialização ────────────────────────────────────────────────────────
 
-  private async carregarBibliotecaEIniciar(): Promise<void> {
+  private async iniciar(): Promise<void> {
     try {
-      const mod = await import('@zxing/browser');
-      this.BrowserMultiFormatReader = mod.BrowserMultiFormatReader;
+      const { BrowserMultiFormatReader } = await import('@zxing/browser');
 
-      const cameras = await this.BrowserMultiFormatReader.listVideoInputDevices();
+      const cameras = await BrowserMultiFormatReader.listVideoInputDevices();
       this.camerasDisponiveis.set(cameras);
 
       const traseira = cameras.find((c: MediaDeviceInfo) =>
@@ -73,95 +65,62 @@ export class ValidarIngressoComponent implements OnInit, OnDestroy {
       const cameraId = traseira?.deviceId ?? cameras[0]?.deviceId ?? '';
       this.cameraAtualId.set(cameraId);
 
-      this.etapa.set('scanner');
-      this.montarVideo();
+      // Aguarda o <video> estar no DOM
+      setTimeout(() => this.conectar(BrowserMultiFormatReader, cameraId), 300);
+
     } catch (err) {
-      console.error('Erro ao carregar câmera:', err);
+      console.error('Erro ao iniciar câmera:', err);
       this.etapa.set('erro');
       this.erroMsg.set('Não foi possível acessar a câmera. Verifique as permissões do navegador.');
     }
   }
 
-  /**
-   * Ciclo completo de montagem do scanner:
-   * 1. Para qualquer stream ativo
-   * 2. Remove o <video> do DOM (videoVisivel = false)
-   * 3. Aguarda 1 tick para o Angular processar a remoção
-   * 4. Reinsere o <video> (videoVisivel = true)
-   * 5. Aguarda 2 ticks para o Angular criar o elemento
-   * 6. Conecta a câmera no elemento recém-criado
-   */
-  private montarVideo(): void {
-    this.pararStream();
-    this.videoVisivel.set(false);
-
-    // Tick 1: Angular remove o <video>
-    setTimeout(() => {
-      this.videoVisivel.set(true);
-
-      // Tick 2: Angular cria o novo <video>
-      setTimeout(() => {
-        this.iniciarLeitura();
-      }, 80);
-    }, 80);
-  }
-
-  private iniciarLeitura(): void {
-    if (!this.BrowserMultiFormatReader) return;
-
-    const videoNativo = this.videoEl?.nativeElement;
-    if (!videoNativo) {
-      // Elemento ainda não disponível — tenta mais uma vez
-      setTimeout(() => this.iniciarLeitura(), 100);
+  private async conectar(BrowserMultiFormatReader: any, deviceId: string): Promise<void> {
+    const video = this.videoEl?.nativeElement;
+    if (!video) {
+      setTimeout(() => this.conectar(BrowserMultiFormatReader, deviceId), 100);
       return;
     }
 
-    this.codeReader  = new this.BrowserMultiFormatReader();
-    this.scannerAtivo = true;
+    try {
+      this.codeReader  = new BrowserMultiFormatReader();
+      this.scannerAtivo = true;
 
-    const deviceId = this.cameraAtualId() || undefined;
-
-    this.codeReader.decodeFromVideoDevice(
-      deviceId,
-      videoNativo,
-      (result: any, _err: any) => {
-        if (result && this.scannerAtivo) {
-          this.ngZone.run(() => this.onQrLido(result.getText()));
+      await this.codeReader.decodeFromVideoDevice(
+        deviceId || undefined,
+        video,
+        (result: any) => {
+          if (result && this.scannerAtivo) {
+            this.ngZone.run(() => this.onQrLido(result.getText()));
+          }
         }
-      }
-    ).catch((err: any) => {
+      );
+    } catch (err: any) {
       console.error('Erro ao conectar câmera:', err);
       this.ngZone.run(() => {
         this.etapa.set('erro');
         this.erroMsg.set('Erro ao acessar a câmera. Tente recarregar a página.');
       });
-    });
+    }
   }
-
-  // ─── Controle do stream ───────────────────────────────────────────────────
 
   private pararStream(): void {
     this.scannerAtivo = false;
     try { this.codeReader?.reset(); } catch { /* ignore */ }
     this.codeReader = null;
-
-    // Para as tracks do MediaStream diretamente no elemento <video>
     const video = this.videoEl?.nativeElement;
     if (video?.srcObject) {
-      const stream = video.srcObject as MediaStream;
-      stream.getTracks().forEach(t => t.stop());
+      (video.srcObject as MediaStream).getTracks().forEach(t => t.stop());
       video.srcObject = null;
     }
   }
 
-  // ─── Troca de câmera ──────────────────────────────────────────────────────
-
   trocarCamera(deviceId: string): void {
     this.cameraAtualId.set(deviceId);
-    this.montarVideo();
+    this.refresh();
   }
 
-  // ─── Leitura do QR ────────────────────────────────────────────────────────
+  // ─── Leitura ──────────────────────────────────────────────────────────────
 
   private onQrLido(texto: string): void {
     if (!this.scannerAtivo) return;
@@ -180,10 +139,8 @@ export class ValidarIngressoComponent implements OnInit, OnDestroy {
   private extrairId(texto: string): string | null {
     const match = texto.match(/ID:\s*([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i);
     if (match) return match[1];
-
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    if (uuidRegex.test(texto.trim())) return texto.trim();
-
+    const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (uuid.test(texto.trim())) return texto.trim();
     return null;
   }
 
@@ -194,7 +151,6 @@ export class ValidarIngressoComponent implements OnInit, OnDestroy {
     this.http.get<Ingresso>(`${API_URL}/${id}`).subscribe({
       next: (ing) => {
         this.ingresso.set(ing);
-        this.validadoOk.set(false);
         this.etapa.set('resultado');
       },
       error: () => {
@@ -209,13 +165,15 @@ export class ValidarIngressoComponent implements OnInit, OnDestroy {
     if (!ing || ing.status === 1) return;
 
     this.validando.set(true);
-    const payload: Ingresso = { ...ing, status: 1 };
-
-    this.http.put<Ingresso>(`${API_URL}/${ing.id}`, payload).subscribe({
-      next: (atualizado) => {
-        this.ingresso.set(atualizado);
-        this.validadoOk.set(true);
+    this.http.put<Ingresso>(`${API_URL}/${ing.id}`, { ...ing, status: 1 }).subscribe({
+      next: () => {
         this.validando.set(false);
+        this.modalSucessoAberto.set(true);
+        // Fecha a modal e reinicia após 3 segundos
+        setTimeout(() => {
+          this.modalSucessoAberto.set(false);
+          this.refresh();
+        }, 3000);
       },
       error: () => {
         this.validando.set(false);
@@ -224,15 +182,18 @@ export class ValidarIngressoComponent implements OnInit, OnDestroy {
     });
   }
 
-  /**
-   * Reinicia completamente: limpa dados e remonta o scanner do zero.
-   */
+  // ─── Navegação ────────────────────────────────────────────────────────────
+
+  /** Faz reload real da rota destruindo e recriando o componente */
+  refresh(): void {
+    this.pararStream();
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['/validar-ingresso']);
+    });
+  }
+
   novaLeitura(): void {
-    this.ingresso.set(null);
-    this.erroMsg.set('');
-    this.validadoOk.set(false);
-    this.etapa.set('scanner');
-    this.montarVideo();
+    this.refresh();
   }
 
   // ─── Formatação ───────────────────────────────────────────────────────────
