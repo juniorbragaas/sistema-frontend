@@ -24,6 +24,10 @@ import { ReservaPort } from './core/ports/reserva.port';
 import { ReservaRepository } from './data/repositories/reserva.repository';
 import { ControleCustosPort } from './core/ports/controle-custos.port';
 import { ControleCustosRepository } from './data/repositories/controle-custos.repository';
+import { TipoVeiculoPort } from './core/ports/tipo-veiculo.port';
+import { TipoVeiculoRepository } from './data/repositories/tipo-veiculo.repository';
+import { VeiculoPort } from './core/ports/veiculo.port';
+import { VeiculoRepository } from './data/repositories/veiculo.repository';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -41,5 +45,8 @@ export const appConfig: ApplicationConfig = {
     { provide: UsuarioPort,        useClass: UsuarioRepository },
     { provide: ReservaPort,        useClass: ReservaRepository },
     { provide: ControleCustosPort, useClass: ControleCustosRepository },
+    { provide: TipoVeiculoPort,    useClass: TipoVeiculoRepository },
+    { provide: VeiculoPort,        useClass: VeiculoRepository },
   ],
 };
+

@@ -1,12 +1,12 @@
 import { Injectable, inject } from '@angular/core';
-import { TipoVeiculoService } from '../services/tipo-veiculo.service';
+import { TipoVeiculoPort } from '../ports/tipo-veiculo.port';
 import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ExcluirTipoVeiculoUseCase {
-  private tipoVeiculoService = inject(TipoVeiculoService);
+  private tipoVeiculoPort = inject(TipoVeiculoPort);
 
   execute(id: string): Observable<void> {
-    return this.tipoVeiculoService.deletar(id);
+    return this.tipoVeiculoPort.excluir(id);
   }
 }

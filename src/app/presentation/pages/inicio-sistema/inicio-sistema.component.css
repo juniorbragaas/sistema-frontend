@@ -89,3 +89,59 @@
   font-size: 0.8rem;
   opacity: 0.85;
 }
+
+/* ===== Temas Datatable ===== */
+
+.tema-btn {
+  border-width: 2px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 4px;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.tema-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+}
+
+/* ===== Preview Datatable ===== */
+
+.table-preview {
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  width: 100%;
+}
+
+.table-preview th,
+.table-preview td {
+  border: 1px solid #d4d4d4;
+  padding: 6px 10px;
+  vertical-align: middle;
+}
+
+.preview-th {
+  background-color: var(--dt-header-bg) !important;
+  color: var(--dt-header-text) !important;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.preview-filter-th {
+  background-color: var(--dt-filter-bg) !important;
+  padding: 4px 6px !important;
+}
+
+.preview-row-odd td {
+  background-color: var(--dt-row-odd-bg) !important;
+}
+
+.preview-row-even td {
+  background-color: var(--dt-row-even-bg) !important;
+}
+
+.preview-row-odd:hover td,
+.preview-row-even:hover td {
+  background-color: var(--dt-row-hover-bg) !important;
+}

@@ -157,6 +157,16 @@ export const routes: Routes = [
         ]},
       },
       {
+        path: 'cadastro-veiculos',
+        loadComponent: () =>
+          import('./presentation/pages/cadastro-veiculos/cadastro-veiculos.component').then(m => m.CadastroVeiculosComponent),
+        data: { breadcrumbs: [
+          { label: 'Home', url: '/home' },
+          { label: 'Estacionamento' },
+          { label: 'Cadastro de Veículos', url: '/cadastro-veiculos' },
+        ]},
+      },
+      {
         path: 'logs',
         loadComponent: () =>
           import('./presentation/pages/logs/logs.component').then(m => m.LogsComponent),

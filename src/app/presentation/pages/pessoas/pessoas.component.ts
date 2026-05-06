@@ -8,13 +8,14 @@ import { PageTitleComponent } from '../../shared/page-title/page-title.component
 import { CrudButtonsComponent } from '../../shared/crud-buttons/crud-buttons.component';
 import { CpfMaskDirective } from '../../shared/directives/cpf-mask.directive';
 import { EmailMaskDirective } from '../../shared/directives/email-mask.directive';
+import { AppTableDirective } from '../../shared/app-table/app-table.directive';
 
 type ModalAcao = 'inserir' | 'visualizar' | 'alterar' | 'excluir' | null;
 
 @Component({
   selector: 'app-pessoas',
   standalone: true,
-  imports: [FormsModule, PageTitleComponent, CrudButtonsComponent, CpfMaskDirective, EmailMaskDirective],
+  imports: [FormsModule, PageTitleComponent, CrudButtonsComponent, CpfMaskDirective, EmailMaskDirective, AppTableDirective],
   templateUrl: './pessoas.component.html',
   styleUrl: './pessoas.component.css',
 })

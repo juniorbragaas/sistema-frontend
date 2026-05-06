@@ -8,11 +8,12 @@ import { Convidado } from '../../../core/models/convidado.model';
 import { PessoaApi } from '../../../core/models/pessoa-api.model';
 import { PageTitleComponent } from '../../shared/page-title/page-title.component';
 import { CrudButtonsComponent } from '../../shared/crud-buttons/crud-buttons.component';
+import { AppTableDirective } from '../../shared/app-table/app-table.directive';
 
 @Component({
   selector: 'app-convidados',
   standalone: true,
-  imports: [FormsModule, PageTitleComponent, CrudButtonsComponent],
+  imports: [FormsModule, PageTitleComponent, CrudButtonsComponent, AppTableDirective],
   templateUrl: './convidados.component.html',
   styleUrl: './convidados.component.css',
 })

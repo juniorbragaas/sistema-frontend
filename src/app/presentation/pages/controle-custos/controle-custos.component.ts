@@ -13,13 +13,14 @@ import { TipoGasto }                     from '../../../core/models/tipo-gasto.m
 import { AppConfigService }         from '../../../core/services/app-config.service';
 import { PageTitleComponent }       from '../../shared/page-title/page-title.component';
 import { CrudButtonsComponent }     from '../../shared/crud-buttons/crud-buttons.component';
+import { AppTableDirective } from '../../shared/app-table/app-table.directive';
 
 type ModalAcao = 'inserir' | 'visualizar' | 'alterar' | 'excluir' | null;
 
 @Component({
   selector: 'app-controle-custos',
   standalone: true,
-  imports: [FormsModule, PageTitleComponent, CrudButtonsComponent],
+  imports: [FormsModule, PageTitleComponent, CrudButtonsComponent, AppTableDirective],
   templateUrl: './controle-custos.component.html',
   styleUrl: './controle-custos.component.css',
 })

@@ -5,6 +5,7 @@ import { PageTitleComponent } from '../../shared/page-title/page-title.component
 import { CrudButtonsComponent } from '../../shared/crud-buttons/crud-buttons.component';
 import { AtendimentoService, AtendimentoDto } from '../../../core/services/atendimento.service';
 import { AuthPort } from '../../../core/ports/auth.port';
+import { AppTableDirective } from '../../shared/app-table/app-table.directive';
 
 interface AtendimentoPlanejado {
   id: string;
@@ -24,7 +25,7 @@ type ModalAcao = 'gerar-senha' | null;
 @Component({
   selector: 'app-atendimento-planejado',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageTitleComponent, CrudButtonsComponent],
+  imports: [CommonModule, FormsModule, PageTitleComponent, CrudButtonsComponent, AppTableDirective],
   templateUrl: './atendimento-planejado.component.html',
   styleUrl: './atendimento-planejado.component.css',
 })

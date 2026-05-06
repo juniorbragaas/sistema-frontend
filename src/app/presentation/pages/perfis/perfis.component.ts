@@ -7,13 +7,14 @@ import { ExcluirPerfilUseCase } from '../../../core/usecases/excluir-perfil.usec
 import { Perfil } from '../../../core/models/perfil.model';
 import { PageTitleComponent } from '../../shared/page-title/page-title.component';
 import { CrudButtonsComponent } from '../../shared/crud-buttons/crud-buttons.component';
+import { AppTableDirective } from '../../shared/app-table/app-table.directive';
 
 type ModalAcao = 'inserir' | 'visualizar' | 'alterar' | 'excluir' | null;
 
 @Component({
   selector: 'app-perfis',
   standalone: true,
-  imports: [FormsModule, PageTitleComponent, CrudButtonsComponent],
+  imports: [FormsModule, PageTitleComponent, CrudButtonsComponent, AppTableDirective],
   templateUrl: './perfis.component.html',
   styleUrl: './perfis.component.css',
 })

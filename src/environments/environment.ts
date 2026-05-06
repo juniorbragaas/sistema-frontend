@@ -27,4 +27,11 @@ export const environment = {
   loginBgImage: '',
   sidebarBgColor: '#212529',
   sidebarTextColor: '#ffffff',
+  tableHeaderBg: '#4472c4',
+  tableHeaderText: '#ffffff',
+  tableFilterBg: '#d9e2f3',
+  tableRowOddBg: '#ffffff',
+  tableRowEvenBg: '#eef2fa',
+  tableRowHoverBg: '#b4c6e7',
+  tableRowText: '#212529',
 };

@@ -10,7 +10,7 @@
       <div class="alert alert-danger m-3" role="alert">{{ erro() }}</div>
     } @else {
       <div class="table-responsive">
-        <table class="table mb-0">
+        <table class="table mb-0" appTable>
           <thead>
             <tr>
               @for (col of colunas(); track col) {
@@ -99,7 +99,7 @@
       </div>
 
       <div class="table-responsive">
-        <table class="table mb-0">
+        <table class="table mb-0" appTable>
           <tbody>
             <tr style="background-color: #f8f9fa; border-top: 2px solid #dee2e6;">
               <td colspan="100%" class="p-3">

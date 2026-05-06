@@ -13,13 +13,14 @@ import { CrudButtonsComponent }   from '../../shared/crud-buttons/crud-buttons.c
 
 import { CpfMaskDirective } from '../../shared/directives/cpf-mask.directive';
 import { EmailMaskDirective } from '../../shared/directives/email-mask.directive';
+import { AppTableDirective } from '../../shared/app-table/app-table.directive';
 
 type ModalAcao = 'inserir' | 'visualizar' | 'alterar' | 'excluir' | 'reset-senha' | null;
 
 @Component({
   selector: 'app-usuarios',
   standalone: true,
-  imports: [FormsModule, PageTitleComponent, CrudButtonsComponent, EmailMaskDirective],
+  imports: [FormsModule, PageTitleComponent, CrudButtonsComponent, EmailMaskDirective, AppTableDirective],
   templateUrl: './usuarios.component.html',
   styleUrl: './usuarios.component.css',
 })

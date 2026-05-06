@@ -12,6 +12,9 @@ const KEYS = [
   'btnSimBg','btnSimText','btnNaoBg','btnNaoText',
   'loginBgImage',
   'sidebarBgColor','sidebarTextColor',
+  'tableHeaderBg','tableHeaderText',
+  'tableFilterBg',
+  'tableRowOddBg','tableRowEvenBg','tableRowHoverBg','tableRowText',
 ] as const;
 
 type ConfigKey = typeof KEYS[number];
@@ -29,6 +32,9 @@ export class AppConfigService {
   btnSimBg; btnSimText; btnNaoBg; btnNaoText;
   loginBgImage;
   sidebarBgColor; sidebarTextColor;
+  tableHeaderBg; tableHeaderText;
+  tableFilterBg;
+  tableRowOddBg; tableRowEvenBg; tableRowHoverBg; tableRowText;
 
   constructor() {
     const env = environment as unknown as Record<string, string>;
@@ -63,6 +69,13 @@ export class AppConfigService {
     this.loginBgImage = this.signals.loginBgImage.asReadonly();
     this.sidebarBgColor = this.signals.sidebarBgColor.asReadonly();
     this.sidebarTextColor = this.signals.sidebarTextColor.asReadonly();
+    this.tableHeaderBg = this.signals.tableHeaderBg.asReadonly();
+    this.tableHeaderText = this.signals.tableHeaderText.asReadonly();
+    this.tableFilterBg = this.signals.tableFilterBg.asReadonly();
+    this.tableRowOddBg = this.signals.tableRowOddBg.asReadonly();
+    this.tableRowEvenBg = this.signals.tableRowEvenBg.asReadonly();
+    this.tableRowHoverBg = this.signals.tableRowHoverBg.asReadonly();
+    this.tableRowText = this.signals.tableRowText.asReadonly();
 
     this.restore();
   }

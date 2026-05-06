@@ -1,13 +1,13 @@
 import { Injectable, inject } from '@angular/core';
-import { TipoVeiculoService } from '../services/tipo-veiculo.service';
+import { TipoVeiculoPort } from '../ports/tipo-veiculo.port';
 import { TipoVeiculo } from '../models/tipo-veiculo.model';
 import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AtualizarTipoVeiculoUseCase {
-  private tipoVeiculoService = inject(TipoVeiculoService);
+  private tipoVeiculoPort = inject(TipoVeiculoPort);
 
-  execute(id: string, tipoVeiculo: TipoVeiculo): Observable<TipoVeiculo> {
-    return this.tipoVeiculoService.atualizar(id, tipoVeiculo);
+  execute(id: string, tipoVeiculo: Partial<TipoVeiculo>): Observable<TipoVeiculo> {
+    return this.tipoVeiculoPort.atualizar(id, tipoVeiculo);
   }
 }

@@ -234,6 +234,43 @@ body {
   transition: background-color 0.15s ease;
 }
 
+/* ===== Datatable com CSS Variables (appTable directive) ===== */
+
+table[appTable] {
+  --dt-header-bg:    #4472c4;
+  --dt-header-text:  #ffffff;
+  --dt-filter-bg:    #d9e2f3;
+  --dt-row-odd-bg:   #ffffff;
+  --dt-row-even-bg:  #eef2fa;
+  --dt-row-hover-bg: #b4c6e7;
+  --dt-row-text:     #212529;
+}
+
+table[appTable] thead tr:first-child th {
+  background-color: var(--dt-header-bg) !important;
+  color: var(--dt-header-text) !important;
+  border-color: color-mix(in srgb, var(--dt-header-bg) 80%, #000) !important;
+}
+
+table[appTable] thead tr:nth-child(2) th {
+  background-color: var(--dt-filter-bg) !important;
+}
+
+table[appTable] tbody tr:nth-child(odd) td {
+  background-color: var(--dt-row-odd-bg) !important;
+  color: var(--dt-row-text) !important;
+}
+
+table[appTable] tbody tr:nth-child(even) td {
+  background-color: var(--dt-row-even-bg) !important;
+  color: var(--dt-row-text) !important;
+}
+
+table[appTable] tbody tr:hover td {
+  background-color: var(--dt-row-hover-bg) !important;
+  transition: background-color 0.15s ease;
+}
+
 /* ===== Título de Página Global ===== */
 
 .page-title-header {
