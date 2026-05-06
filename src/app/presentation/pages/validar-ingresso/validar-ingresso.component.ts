@@ -1,6 +1,6 @@
 import {
-  Component, signal, inject, OnInit, OnDestroy,
-  ElementRef, ViewChild, NgZone, PLATFORM_ID
+  Component, signal, inject, OnInit, OnDestroy, AfterViewChecked,
+  ElementRef, ViewChild, NgZone, PLATFORM_ID, ChangeDetectorRef
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -17,79 +17,108 @@ const API_URL = 'https://localhost:7116/api/Ingressos';
   templateUrl: './validar-ingresso.component.html',
   styleUrl: './validar-ingresso.component.css',
 })
-export class ValidarIngressoComponent implements OnInit, OnDestroy {
-  @ViewChild('videoEl', { static: false }) videoEl!: ElementRef<HTMLVideoElement>;
+export class ValidarIngressoComponent implements OnInit, OnDestroy, AfterViewChecked {
+  @ViewChild('videoEl', { static: false }) videoEl?: ElementRef<HTMLVideoElement>;
 
   private http     = inject(HttpClient);
   private ngZone   = inject(NgZone);
   private platform = inject(PLATFORM_ID);
+  private cdr      = inject(ChangeDetectorRef);
 
   // ─── Estado ──────────────────────────────────────────────────────────────────
-  etapa          = signal<Etapa>('scanner');
-  ingresso       = signal<Ingresso | null>(null);
-  erroMsg        = signal('');
-  validando      = signal(false);
-  validadoOk     = signal(false);
+  etapa              = signal<Etapa>('scanner');
+  ingresso           = signal<Ingresso | null>(null);
+  erroMsg            = signal('');
+  validando          = signal(false);
+  validadoOk         = signal(false);
   camerasDisponiveis = signal<MediaDeviceInfo[]>([]);
-  cameraAtualId  = signal<string>('');
+  cameraAtualId      = signal<string>('');
 
-  private stream: MediaStream | null = null;
+  // Controle interno do scanner
   private codeReader: any = null;
-  private scannerAtivo = false;
+  private scannerAtivo    = false;
+  private aguardandoVideo = false; // flag: precisa conectar câmera quando o <video> aparecer
+  private BrowserMultiFormatReader: any = null; // classe guardada para reuso
 
   // ─── Lifecycle ───────────────────────────────────────────────────────────────
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platform)) {
-      this.iniciarScanner();
+      this.carregarBibliotecaEIniciar();
     }
   }
 
   ngOnDestroy(): void {
-    this.pararScanner();
+    this.destruirScanner();
   }
 
-  // ─── Scanner ─────────────────────────────────────────────────────────────────
+  /**
+   * AfterViewChecked é chamado toda vez que o Angular termina de verificar a view.
+   * Usamos para detectar quando o <video> aparece no DOM após mudar a etapa para 'scanner'.
+   */
+  ngAfterViewChecked(): void {
+    if (this.aguardandoVideo && this.videoEl?.nativeElement) {
+      this.aguardandoVideo = false;
+      // Executa fora do ciclo de detecção para não causar ExpressionChangedAfterItHasBeenChecked
+      setTimeout(() => this.conectarCamera(this.cameraAtualId() || undefined), 0);
+    }
+  }
 
-  async iniciarScanner(): Promise<void> {
+  // ─── Inicialização ───────────────────────────────────────────────────────────
+
+  private async carregarBibliotecaEIniciar(): Promise<void> {
     try {
-      // Importação dinâmica para evitar problemas de SSR
-      const { BrowserMultiFormatReader } = await import('@zxing/browser');
-      this.codeReader = new BrowserMultiFormatReader();
+      const mod = await import('@zxing/browser');
+      this.BrowserMultiFormatReader = mod.BrowserMultiFormatReader;
 
-      // Lista câmeras disponíveis
-      const cameras = await BrowserMultiFormatReader.listVideoInputDevices();
+      // Lista câmeras uma única vez
+      const cameras = await this.BrowserMultiFormatReader.listVideoInputDevices();
       this.camerasDisponiveis.set(cameras);
 
-      // Prefere câmera traseira em dispositivos móveis
-      const traseira = cameras.find(c =>
-        c.label.toLowerCase().includes('back') ||
-        c.label.toLowerCase().includes('traseira') ||
-        c.label.toLowerCase().includes('rear') ||
-        c.label.toLowerCase().includes('environment')
+      const traseira = cameras.find((c: MediaDeviceInfo) =>
+        /back|traseira|rear|environment/i.test(c.label)
       );
-      const cameraId = traseira?.deviceId ?? cameras[0]?.deviceId ?? undefined;
-      if (cameraId) this.cameraAtualId.set(cameraId);
+      const cameraId = traseira?.deviceId ?? cameras[0]?.deviceId ?? '';
+      this.cameraAtualId.set(cameraId);
 
-      this.etapa.set('scanner');
-      this.scannerAtivo = true;
-
-      // Aguarda o DOM renderizar o elemento de vídeo
-      setTimeout(() => this.conectarCamera(cameraId), 100);
-
-    } catch (err: any) {
-      console.error('Erro ao iniciar scanner:', err);
+      this.iniciarNovoScanner();
+    } catch (err) {
+      console.error('Erro ao carregar biblioteca de QR Code:', err);
       this.etapa.set('erro');
       this.erroMsg.set('Não foi possível acessar a câmera. Verifique as permissões do navegador.');
     }
   }
 
+  /**
+   * Cria uma nova instância do codeReader e sinaliza que precisa do <video>.
+   * Chamado tanto na inicialização quanto em "Nova Leitura".
+   */
+  private iniciarNovoScanner(): void {
+    this.destruirScanner();
+
+    if (!this.BrowserMultiFormatReader) return;
+
+    this.codeReader  = new this.BrowserMultiFormatReader();
+    this.scannerAtivo = true;
+    this.etapa.set('scanner');
+
+    // Se o <video> já está no DOM, conecta direto; senão aguarda o AfterViewChecked
+    if (this.videoEl?.nativeElement) {
+      setTimeout(() => this.conectarCamera(this.cameraAtualId() || undefined), 0);
+    } else {
+      this.aguardandoVideo = true;
+      this.cdr.detectChanges(); // força o Angular a renderizar o <video>
+    }
+  }
+
+  // ─── Scanner ─────────────────────────────────────────────────────────────────
+
   private async conectarCamera(deviceId?: string): Promise<void> {
-    if (!this.codeReader || !this.videoEl?.nativeElement) return;
+    if (!this.codeReader || !this.videoEl?.nativeElement || !this.scannerAtivo) return;
 
     try {
       await this.codeReader.decodeFromVideoDevice(
-        deviceId,
+        deviceId || undefined,
         this.videoEl.nativeElement,
         (result: any, err: any) => {
           if (result && this.scannerAtivo) {
@@ -108,30 +137,37 @@ export class ValidarIngressoComponent implements OnInit, OnDestroy {
 
   trocarCamera(deviceId: string): void {
     this.cameraAtualId.set(deviceId);
-    this.pararScanner();
-    setTimeout(() => {
-      this.scannerAtivo = true;
-      this.conectarCamera(deviceId);
-    }, 300);
+    // Recria o scanner com a nova câmera
+    this.iniciarNovoScanner();
   }
 
+  /**
+   * Para o scanner atual e libera a câmera.
+   * Não destrói a classe — use destruirScanner() para isso.
+   */
   private pararScanner(): void {
-    this.scannerAtivo = false;
+    this.scannerAtivo    = false;
+    this.aguardandoVideo = false;
     try { this.codeReader?.reset(); } catch { /* ignore */ }
-    if (this.stream) {
-      this.stream.getTracks().forEach(t => t.stop());
-      this.stream = null;
-    }
+  }
+
+  /**
+   * Para o scanner E descarta o codeReader completamente.
+   * Necessário antes de criar uma nova instância.
+   */
+  private destruirScanner(): void {
+    this.pararScanner();
+    this.codeReader = null;
   }
 
   // ─── Leitura do QR ───────────────────────────────────────────────────────────
 
   private onQrLido(texto: string): void {
     if (!this.scannerAtivo) return;
+
+    // Para o scanner imediatamente para não processar múltiplas leituras
     this.pararScanner();
 
-    // Extrai o ID do texto codificado no QR
-    // Formato: "INGRESSO\nID: <uuid>\n..."
     const id = this.extrairId(texto);
 
     if (!id) {
@@ -144,11 +180,9 @@ export class ValidarIngressoComponent implements OnInit, OnDestroy {
   }
 
   private extrairId(texto: string): string | null {
-    // Tenta extrair "ID: <uuid>" do texto
     const match = texto.match(/ID:\s*([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i);
     if (match) return match[1];
 
-    // Fallback: se o texto inteiro for um UUID válido
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (uuidRegex.test(texto.trim())) return texto.trim();
 
@@ -174,10 +208,7 @@ export class ValidarIngressoComponent implements OnInit, OnDestroy {
 
   validarIngresso(): void {
     const ing = this.ingresso();
-    if (!ing) return;
-
-    // Já utilizado
-    if (ing.status === 1) return;
+    if (!ing || ing.status === 1) return;
 
     this.validando.set(true);
     const payload: Ingresso = { ...ing, status: 1 };
@@ -195,13 +226,15 @@ export class ValidarIngressoComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Reinicia tudo do zero: limpa o estado e cria um novo scanner.
+   */
   novaLeitura(): void {
     this.ingresso.set(null);
     this.erroMsg.set('');
     this.validadoOk.set(false);
-    this.etapa.set('scanner');
-    this.scannerAtivo = true;
-    setTimeout(() => this.conectarCamera(this.cameraAtualId() || undefined), 200);
+    // iniciarNovoScanner cuida de destruir o anterior, mudar a etapa e aguardar o <video>
+    this.iniciarNovoScanner();
   }
 
   // ─── Formatação ──────────────────────────────────────────────────────────────
