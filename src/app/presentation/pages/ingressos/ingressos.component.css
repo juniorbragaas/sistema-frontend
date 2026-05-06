@@ -1,5 +1,5 @@
 .col-acao {
-  width: 150px;
+  width: 200px;
 }
 
 .th-sort {
@@ -29,6 +29,8 @@
   background-color: rgba(0, 0, 0, 0.5);
 }
 
+/* ── Badge Status ─────────────────────────────────────────── */
+
 .badge-status {
   display: inline-block;
   padding: 3px 10px;
@@ -46,4 +48,134 @@
 .badge-status.nao-utilizado {
   background-color: #fff3cd;
   color: #664d03;
+}
+
+/* ── Botão QR Code ────────────────────────────────────────── */
+
+.btn-qr {
+  background-color: #6f42c1;
+  color: #fff;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.btn-qr:hover {
+  background-color: #5a32a3;
+  color: #fff;
+}
+
+/* ── Modal QR Code ────────────────────────────────────────── */
+
+.modal-qr .modal-content {
+  max-width: 560px;
+  width: 100%;
+}
+
+.qr-ticket-header {
+  background: linear-gradient(135deg, #0d6efd, #0a58ca);
+  color: #fff;
+  padding: 16px 24px;
+  text-align: center;
+}
+
+.qr-ticket-evento {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.qr-ticket-tipo {
+  font-size: 0.85rem;
+  opacity: 0.85;
+  margin-top: 4px;
+}
+
+.qr-ticket-body {
+  display: flex;
+  gap: 20px;
+  padding: 20px 24px;
+  align-items: flex-start;
+}
+
+.qr-image-wrap {
+  flex-shrink: 0;
+  width: 180px;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.qr-img {
+  width: 176px;
+  height: 176px;
+  border-radius: 6px;
+  display: block;
+}
+
+.qr-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.qr-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.qr-info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.qr-label {
+  font-size: 0.68rem;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.qr-value {
+  font-size: 0.88rem;
+  color: #222;
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.qr-ticket-footer {
+  border-top: 2px dashed #e0e0e0;
+  padding: 12px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: #fafafa;
+}
+
+.qr-id {
+  font-size: 0.7rem;
+  color: #aaa;
+  font-family: 'Courier New', monospace;
+  word-break: break-all;
+  text-align: center;
+}
+
+.qr-hint {
+  font-size: 0.75rem;
+  color: #888;
+  font-style: italic;
 }
