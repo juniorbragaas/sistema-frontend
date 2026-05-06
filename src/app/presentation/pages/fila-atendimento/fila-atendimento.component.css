@@ -607,3 +607,82 @@
     margin-top: 10px;
   }
 }
+
+/* ===== Botão Ativar Áudio ===== */
+
+.btn-ativar-audio {
+  margin-top: 10px;
+  padding: 10px 24px;
+  background-color: #ffc107;
+  color: #212529;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  transition: background-color 0.2s, transform 0.1s;
+  animation: pulse-btn 2s infinite;
+}
+
+.btn-ativar-audio:hover {
+  background-color: #e0a800;
+  transform: scale(1.04);
+}
+
+@keyframes pulse-btn {
+  0%, 100% { box-shadow: 0 4px 12px rgba(255,193,7,0.4); }
+  50%       { box-shadow: 0 4px 24px rgba(255,193,7,0.8); }
+}
+
+.audio-ativo-badge {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 6px 18px;
+  background-color: rgba(40, 167, 69, 0.85);
+  color: #fff;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+/* ===== Modal Chamada — info e rodapé ===== */
+
+.modal-chamada-info {
+  color: white;
+  font-size: 2rem;
+  line-height: 1.8;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.3);
+}
+
+.modal-chamada-info p {
+  margin: 0;
+}
+
+.modal-chamada-repeticao {
+  color: rgba(255,255,255,0.75);
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+}
+
+.modal-chamada-footer {
+  margin-top: 30px;
+}
+
+.btn-fechar-modal {
+  padding: 12px 32px;
+  background-color: rgba(255,255,255,0.2);
+  color: white;
+  border: 2px solid white;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-fechar-modal:hover {
+  background-color: rgba(255,255,255,0.35);
+}

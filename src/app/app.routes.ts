@@ -137,6 +137,16 @@ export const routes: Routes = [
         ]},
       },
       {
+        path: 'ingressos',
+        loadComponent: () =>
+          import('./presentation/pages/ingressos/ingressos.component').then(m => m.IngressosComponent),
+        data: { breadcrumbs: [
+          { label: 'Home', url: '/home' },
+          { label: 'Reservas' },
+          { label: 'Ingressos', url: '/ingressos' },
+        ]},
+      },
+      {
         path: 'atendimento-planejado',
         loadComponent: () =>
           import('./presentation/pages/atendimento-planejado/atendimento-planejado.component').then(m => m.AtendimentoPlanejadoComponent),

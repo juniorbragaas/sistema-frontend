@@ -1,6 +1,14 @@
 <div class="fila-container">
   <div class="fila-header">
     <h1 class="fila-title">FILA DE ATENDIMENTO</h1>
+    <!-- Botão de ativar áudio — necessário por política dos navegadores -->
+    @if (!audioAtivado()) {
+      <button class="btn-ativar-audio" (click)="ativarAudio()">
+        🔊 Clique para ativar o áudio
+      </button>
+    } @else {
+      <span class="audio-ativo-badge">🔊 Áudio ativo</span>
+    }
   </div>
 
   @if (loading()) {
@@ -163,18 +171,31 @@
 
 <!-- Modal de Chamada de Senha -->
 @if (mostraModalChamada()) {
-  <div class="modal-chamada-backdrop"></div>
+  <div class="modal-chamada-backdrop" (click)="fecharModalChamada()"></div>
   <div class="modal-chamada">
     <div class="modal-chamada-content">
       <div class="modal-chamada-header">
-        <h1 class="modal-chamada-titulo">CHAMANDO SENHA</h1>
+        <h1 class="modal-chamada-titulo">🔊 CHAMANDO SENHA</h1>
       </div>
       <div class="modal-chamada-body">
         @if (atendimentoAtual()) {
           <div class="modal-chamada-numero">
             {{ formatarSenha(atendimentoAtual()!.ordem) }}
           </div>
+          <div class="modal-chamada-info">
+            <p><strong>Nome:</strong> {{ atendimentoAtual()!.nome }}</p>
+            <p><strong>Setor:</strong> {{ atendimentoAtual()!.setor }}</p>
+            @if (atendimentoAtual()!.atendente) {
+              <p><strong>Atendente:</strong> {{ atendimentoAtual()!.atendente }}</p>
+            }
+          </div>
+          <div class="modal-chamada-repeticao">
+            Repetição {{ repeticaoAtual() }} de {{ totalRepeticoes }}
+          </div>
         }
+      </div>
+      <div class="modal-chamada-footer">
+        <button class="btn-fechar-modal" (click)="fecharModalChamada()">✕ Fechar</button>
       </div>
     </div>
   </div>
