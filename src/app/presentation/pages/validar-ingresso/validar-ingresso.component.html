@@ -26,7 +26,11 @@
 
       <!-- Viewfinder -->
       <div class="scanner-viewfinder">
-        <video #videoEl class="scanner-video" autoplay muted playsinline></video>
+        @if (videoVisivel()) {
+          <video #videoEl class="scanner-video" autoplay muted playsinline></video>
+        } @else {
+          <div class="scanner-video scanner-video-placeholder"></div>
+        }
         <div class="scanner-overlay">
           <div class="scanner-frame">
             <span class="corner tl"></span>

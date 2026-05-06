@@ -88,6 +88,13 @@
   display: block;
 }
 
+.scanner-video-placeholder {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #000;
+  display: block;
+}
+
 .scanner-overlay {
   position: absolute;
   inset: 0;
