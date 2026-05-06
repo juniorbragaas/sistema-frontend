@@ -1,44 +1,64 @@
-import { Component, signal, inject, OnInit, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ListarTipoVeiculosUseCase } from '../../../core/usecases/listar-tipo-veiculos.usecase';
+import { CriarTipoVeiculoUseCase } from '../../../core/usecases/criar-tipo-veiculo.usecase';
+import { AtualizarTipoVeiculoUseCase } from '../../../core/usecases/atualizar-tipo-veiculo.usecase';
+import { ExcluirTipoVeiculoUseCase } from '../../../core/usecases/excluir-tipo-veiculo.usecase';
+import { TipoVeiculo } from '../../../core/models/tipo-veiculo.model';
 import { PageTitleComponent } from '../../shared/page-title/page-title.component';
 import { CrudButtonsComponent } from '../../shared/crud-buttons/crud-buttons.component';
-import { TipoVeiculoService, TipoVeiculo } from '../../../core/services/tipo-veiculo.service';
+
+type ModalAcao = 'inserir' | 'visualizar' | 'alterar' | 'excluir' | null;
 
 @Component({
   selector: 'app-tipo-veiculos',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageTitleComponent, CrudButtonsComponent],
+  imports: [FormsModule, PageTitleComponent, CrudButtonsComponent],
   templateUrl: './tipo-veiculos.component.html',
   styleUrl: './tipo-veiculos.component.css',
 })
 export class TipoVeiculosComponent implements OnInit {
-  private tipoVeiculoService = inject(TipoVeiculoService);
+  private listarTipoVeiculosUseCase = inject(ListarTipoVeiculosUseCase);
+  private criarTipoVeiculoUseCase = inject(CriarTipoVeiculoUseCase);
+  private atualizarTipoVeiculoUseCase = inject(AtualizarTipoVeiculoUseCase);
+  private excluirTipoVeiculoUseCase = inject(ExcluirTipoVeiculoUseCase);
 
-  // Signals
   tiposVeiculos = signal<TipoVeiculo[]>([]);
   loading = signal(false);
   erro = signal('');
+  colunas = signal<string[]>([]);
   filtros = signal<Record<string, string>>({});
+  sortColuna = signal('');
+  sortDirecao = signal<'asc' | 'desc'>('asc');
   paginaAtual = signal(1);
   itensPorPagina = signal(10);
 
   // Modal
-  mostraModal = signal(false);
-  modalTitulo = signal('');
-  tipoVeiculoEditando = signal<TipoVeiculo | null>(null);
-  carregandoModal = signal(false);
+  modalAberto = signal(false);
+  modalAcao = signal<ModalAcao>(null);
+  itemSelecionado = signal<TipoVeiculo | null>(null);
+  formNome = signal('');
+  formId = signal<string | null>(null);
 
-  // Colunas
-  colunas = [
-    { key: 'nome', label: 'Nome' },
-  ];
+  modalTitulo = computed(() => {
+    switch (this.modalAcao()) {
+      case 'inserir':    return 'Inserir Novo Tipo de Veículo';
+      case 'visualizar': return 'Visualizar Tipo de Veículo';
+      case 'alterar':    return 'Alterar Tipo de Veículo';
+      case 'excluir':    return 'Excluir Tipo de Veículo';
+      default:           return '';
+    }
+  });
 
-  // Computed
+  somenteLeitura = computed(() =>
+    this.modalAcao() === 'visualizar' || this.modalAcao() === 'excluir'
+  );
+
   dadosFiltrados = computed(() => {
     const dados = this.tiposVeiculos();
     const f = this.filtros();
-    
+    const col = this.sortColuna();
+    const dir = this.sortDirecao();
     const filtrados = dados.filter(item =>
       Object.keys(f).every(c => {
         const filtro = f[c]?.toLowerCase() ?? '';
@@ -47,8 +67,12 @@ export class TipoVeiculosComponent implements OnInit {
         return valor.includes(filtro);
       })
     );
-    
-    return filtrados;
+    if (!col) return filtrados;
+    return [...filtrados].sort((a, b) => {
+      const va = String((a as any)[col] ?? '').toLowerCase();
+      const vb = String((b as any)[col] ?? '').toLowerCase();
+      return dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+    });
   });
 
   dadosPaginados = computed(() => {
@@ -68,14 +92,19 @@ export class TipoVeiculosComponent implements OnInit {
   carregarDados(): void {
     this.loading.set(true);
     this.erro.set('');
-    this.tipoVeiculoService.listarTodos().subscribe({
+    this.listarTipoVeiculosUseCase.execute().subscribe({
       next: (dados) => {
         this.tiposVeiculos.set(dados);
+        if (dados.length > 0) {
+          this.colunas.set(['id', 'nome']);
+        } else {
+          this.colunas.set(['id', 'nome']);
+        }
         this.loading.set(false);
       },
       error: (err) => {
         console.error('Erro ao carregar tipos de veículos:', err);
-        this.erro.set('Erro ao carregar dados de tipos de veículos.');
+        this.erro.set('Erro ao carregar dados.');
         this.loading.set(false);
       },
     });
@@ -86,82 +115,105 @@ export class TipoVeiculosComponent implements OnInit {
     this.paginaAtual.set(1);
   }
 
+  ordenarPor(coluna: string): void {
+    if (this.sortColuna() === coluna) {
+      this.sortDirecao.update(d => d === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortColuna.set(coluna);
+      this.sortDirecao.set('asc');
+    }
+    this.paginaAtual.set(1);
+  }
+
+  iconeSort(coluna: string): string {
+    if (this.sortColuna() !== coluna) return '↕';
+    return this.sortDirecao() === 'asc' ? '▲' : '▼';
+  }
+
   irParaPagina(pagina: number): void {
     if (pagina >= 1 && pagina <= this.totalPaginas()) {
       this.paginaAtual.set(pagina);
     }
   }
 
-  abrirModalNovo(): void {
-    this.tipoVeiculoEditando.set({ id: '', nome: '' });
-    this.modalTitulo.set('Novo Tipo de Veículo');
-    this.mostraModal.set(true);
+  onInserir(): void {
+    this.itemSelecionado.set(null);
+    this.formId.set(null);
+    this.formNome.set('');
+    this.modalAcao.set('inserir');
+    this.modalAberto.set(true);
   }
 
-  abrirModalEditar(tipoVeiculo: TipoVeiculo): void {
-    this.tipoVeiculoEditando.set({ ...tipoVeiculo });
-    this.modalTitulo.set('Editar Tipo de Veículo');
-    this.mostraModal.set(true);
+  onVisualizar(item: TipoVeiculo): void {
+    this.itemSelecionado.set(item);
+    this.formId.set(item.id);
+    this.formNome.set(item.nome);
+    this.modalAcao.set('visualizar');
+    this.modalAberto.set(true);
+  }
+
+  onAlterar(item: TipoVeiculo): void {
+    this.itemSelecionado.set(item);
+    this.formId.set(item.id);
+    this.formNome.set(item.nome);
+    this.modalAcao.set('alterar');
+    this.modalAberto.set(true);
+  }
+
+  onExcluir(item: TipoVeiculo): void {
+    this.itemSelecionado.set(item);
+    this.formId.set(item.id);
+    this.formNome.set(item.nome);
+    this.modalAcao.set('excluir');
+    this.modalAberto.set(true);
   }
 
   fecharModal(): void {
-    this.mostraModal.set(false);
-    this.tipoVeiculoEditando.set(null);
+    this.modalAberto.set(false);
+    this.modalAcao.set(null);
+    this.itemSelecionado.set(null);
   }
 
-  salvar(): void {
-    const tipoVeiculo = this.tipoVeiculoEditando();
-    if (!tipoVeiculo) return;
+  confirmarModal(): void {
+    const acao = this.modalAcao();
+    const nome = this.formNome();
+    const id = this.formId();
 
-    if (!tipoVeiculo.nome || tipoVeiculo.nome.trim() === '') {
-      this.erro.set('Nome é obrigatório');
+    if (acao === 'inserir') {
+      this.criarTipoVeiculoUseCase.execute({ id: '', nome }).subscribe({
+        next: () => { this.fecharModal(); this.carregarDados(); },
+        error: (err) => {
+          console.error('Erro ao criar tipo de veículo', err);
+          this.erro.set('Erro ao criar tipo de veículo');
+        },
+      });
       return;
     }
 
-    this.carregandoModal.set(true);
-
-    if (tipoVeiculo.id) {
-      // Atualizar
-      this.tipoVeiculoService.atualizar(tipoVeiculo.id, tipoVeiculo).subscribe({
-        next: () => {
-          this.carregarDados();
-          this.fecharModal();
-          this.carregandoModal.set(false);
-        },
+    if (acao === 'alterar' && id) {
+      this.atualizarTipoVeiculoUseCase.execute(id, { id, nome }).subscribe({
+        next: () => { this.fecharModal(); this.carregarDados(); },
         error: (err) => {
-          console.error('Erro ao atualizar:', err);
+          console.error('Erro ao atualizar tipo de veículo', err);
           this.erro.set('Erro ao atualizar tipo de veículo');
-          this.carregandoModal.set(false);
         },
       });
-    } else {
-      // Criar
-      this.tipoVeiculoService.criar(tipoVeiculo).subscribe({
-        next: () => {
-          this.carregarDados();
-          this.fecharModal();
-          this.carregandoModal.set(false);
-        },
+      return;
+    }
+
+    if (acao === 'excluir' && id) {
+      this.excluirTipoVeiculoUseCase.execute(id).subscribe({
+        next: () => { this.fecharModal(); this.carregarDados(); },
         error: (err) => {
-          console.error('Erro ao criar:', err);
-          this.erro.set('Erro ao criar tipo de veículo');
-          this.carregandoModal.set(false);
+          console.error('Erro ao excluir tipo de veículo', err);
+          this.erro.set('Erro ao excluir tipo de veículo');
         },
       });
+      return;
     }
   }
 
-  deletar(id: string): void {
-    if (confirm('Tem certeza que deseja deletar este tipo de veículo?')) {
-      this.tipoVeiculoService.deletar(id).subscribe({
-        next: () => {
-          this.carregarDados();
-        },
-        error: (err) => {
-          console.error('Erro ao deletar:', err);
-          this.erro.set('Erro ao deletar tipo de veículo');
-        },
-      });
-    }
+  getItemValue(item: TipoVeiculo, col: string): any {
+    return (item as any)[col];
   }
 }

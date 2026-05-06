@@ -1,5 +1,20 @@
 .col-acao {
-  width: 200px;
+  width: 150px;
+}
+
+.th-sort {
+  cursor: pointer;
+  user-select: none;
+}
+
+.th-sort:hover {
+  background-color: #f5f5f5;
+}
+
+.sort-icon {
+  margin-left: 5px;
+  font-size: 0.8rem;
+  color: #999;
 }
 
 .filtro-input {
@@ -12,8 +27,4 @@
 
 .modal {
   background-color: rgba(0, 0, 0, 0.5);
-}
-
-.btn-sm {
-  margin: 0 2px;
 }
