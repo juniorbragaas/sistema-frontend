@@ -141,6 +141,43 @@
   </div>
 </div>
 
+<!-- ── Utilitários (Links Anônimos) ───────────────────────────────────────── -->
+<div class="row mt-4">
+  <div class="col-12">
+    <div class="card shadow-sm">
+      <div class="card-header d-flex align-items-center gap-2"
+           style="background-color:#6f42c1;color:#fff;">
+        <span style="font-size:1.1rem;">🔗</span>
+        <h5 class="mb-0">Utilitários</h5>
+        <small class="ms-2 opacity-75">Acesso público — não requer login</small>
+      </div>
+      <div class="card-body">
+        <div class="utilitarios-grid">
+
+          <a href="/fila-atendimento" target="_blank" class="utilitario-card">
+            <div class="utilitario-icone">📋</div>
+            <div class="utilitario-info">
+              <div class="utilitario-titulo">Fila de Atendimento</div>
+              <div class="utilitario-desc">Painel público da fila com chamada por senha e áudio</div>
+            </div>
+            <div class="utilitario-seta">↗</div>
+          </a>
+
+          <a href="/validar-ingresso" target="_blank" class="utilitario-card">
+            <div class="utilitario-icone">🎟️</div>
+            <div class="utilitario-info">
+              <div class="utilitario-titulo">Validar Ingresso</div>
+              <div class="utilitario-desc">Leitura de QR Code para validação de ingressos via câmera</div>
+            </div>
+            <div class="utilitario-seta">↗</div>
+          </a>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ── Modal: Reservas do Dia ─────────────────────────────────────────────── -->
 @if (modalReservasDiaAberto()) {
   <div class="modal-backdrop show"></div>
