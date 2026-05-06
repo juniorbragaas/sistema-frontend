@@ -13,11 +13,12 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 0 1rem;
+  padding: 1rem;
   background-color: #f8f9fa;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  gap: 0;
 }
 
 .login-wrapper.has-bg {
@@ -62,4 +63,97 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+/* ── Utilitários ─────────────────────────────────────────────────────── */
+
+.utilitarios-section {
+  margin-top: 28px;
+  width: 100%;
+  max-width: 500px;
+}
+
+.utilitarios-titulo {
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+/* Quando há imagem de fundo, o texto fica branco */
+.has-bg .utilitarios-titulo {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.utilitarios-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.utilitario-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(111, 66, 193, 0.15);
+  text-decoration: none;
+  color: inherit;
+  backdrop-filter: blur(6px);
+  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+  cursor: pointer;
+}
+
+.utilitario-card:hover {
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 4px 14px rgba(111, 66, 193, 0.18);
+  transform: translateY(-1px);
+  text-decoration: none;
+  color: inherit;
+}
+
+.utilitario-icone {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ede0ff;
+  border-radius: 8px;
+}
+
+.utilitario-info {
+  flex: 1;
+}
+
+.utilitario-nome {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #3d1f7a;
+}
+
+.utilitario-desc {
+  font-size: 0.73rem;
+  color: #6c757d;
+  margin-top: 1px;
+}
+
+.utilitario-seta {
+  font-size: 1rem;
+  color: #6f42c1;
+  font-weight: 700;
+  opacity: 0.5;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+}
+
+.utilitario-card:hover .utilitario-seta {
+  opacity: 1;
 }
