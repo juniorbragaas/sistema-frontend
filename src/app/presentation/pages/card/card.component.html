@@ -1,0 +1,73 @@
+<div class="container">
+
+  <div class="painel">
+
+    <h2>Gerador de Card</h2>
+
+    <input [(ngModel)]="numero" placeholder="Número">
+
+    <input [(ngModel)]="letras" placeholder="Letras">
+
+    <input [(ngModel)]="nome" placeholder="Nome">
+
+    <label>Escudo</label>
+    <input type="file" (change)="upload($event,'escudo')">
+
+    <label>Fundo</label>
+    <input type="file" (change)="upload($event,'fundo')">
+
+    <label>Foto principal</label>
+    <input type="file" (change)="upload($event,'foto')">
+
+    <label>Mini foto</label>
+    <input type="file" (change)="upload($event,'miniFoto')">
+
+    <button (click)="exportarPNG()">
+      Exportar PNG
+    </button>
+
+  </div>
+
+  <div class="card-container">
+
+    <div class="card-custom" id="card">
+
+      <img *ngIf="fundo" [src]="fundo" class="bg-img">
+
+      <div class="numero">
+        {{numero}}
+      </div>
+
+      <div class="letras">
+        {{letras}}
+      </div>
+
+      <img *ngIf="escudo"
+           [src]="escudo"
+           class="escudo">
+
+      <img *ngIf="foto"
+     [src]="foto"
+     class="foto-principal"
+
+     [style.transform]="
+      'translate(-50%, -50%) ' +
+      'translate(' + fotoX + 'px,' + fotoY + 'px) ' +
+      'scale(' + fotoScale + ')'
+     ">
+     <div class="controles">
+
+</div>
+      <img *ngIf="miniFoto"
+           [src]="miniFoto"
+           class="mini-foto">
+
+      <div class="nome">
+        {{nome}}
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

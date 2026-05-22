@@ -18,6 +18,11 @@ export const routes: Routes = [
       import('./presentation/pages/validar-ingresso/validar-ingresso.component').then(m => m.ValidarIngressoComponent),
   },
   {
+        path: 'card',
+        loadComponent: () =>
+          import('./presentation/pages/card/card.component').then(m => m.CardComponent),
+  },
+  {
     path: '',
     loadComponent: () =>
       import('./presentation/shared/layout/layout.component').then(m => m.LayoutComponent),
@@ -179,6 +184,16 @@ export const routes: Routes = [
           { label: 'Home', url: '/home' },
           { label: 'Estacionamento' },
           { label: 'Cadastro de Veículos', url: '/cadastro-veiculos' },
+        ]},
+      },
+       {
+        path: 'card',
+        loadComponent: () =>
+          import('./presentation/pages/card/card.component').then(m => m.CardComponent),
+        data: { breadcrumbs: [
+          { label: 'Home', url: '/home' },
+          { label: 'Relatórios' },
+          { label: 'Card', url: '/card' },
         ]},
       },
       {
